@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import Link from 'next/dist/client/link'
-import Image from 'next/dist/client/image'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { addToCart, decrementQuantity } from '../redux/cart.slice';
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Skeleton } from './ui/skeleton';
+import { Badge, Card } from 'antd';
 export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRowView: boolean }) => {
     const { pathname } = useRouter()
     const cartItems = useSelector((state: RootState) => state.cart);
@@ -53,35 +54,39 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
 
             {pro_data && !isRowView ?
                 <div className="relative border border-muted rounded-lg bg-white  max-w-[250px]" >
-                    <figure className='border border-muted m-2 rounded-lg relative '>
-                        <Link href={`/product/${pro_data.slug}`} className="   block bg-white  rounded-lg rounded-b-none  relative">
+                    <Badge.Ribbon text={pro_data.label ? pro_data.label.label_text : null} color={pro_data.label ? pro_data.label.color_code : "cyan"} className='skeleton-box'>
+                        <figure className='border border-muted m-2 rounded-lg relative '>
+                            <Link href={`/product/${pro_data.slug}`} className="   block bg-white  rounded-lg rounded-b-none  relative">
 
-                            {isValidImage ?
-                                
+                                {isValidImage ?
+
                                     <Image onError={handleImageError} className={`rounded-lg  object-cover h-full w-full max-h-[200px]`} src={pro_data.images?.featured_image} width={200} height={200} alt="product_img" />
-                               
-                                :
-                                  <Skeleton className="h-[200px] w-full" />
-                            }
-                            <span className="flex absolute bg-amber-400 opacity-90 rounded-bl-lg px-[7px] py-[1px] bottom-0 left-0 rounded-tr-xl shadow-xl ">
+
+                                    :
+                                    <Skeleton className="h-[200px] w-full" />
+                                }
+                                <span className="flex absolute bg-amber-500 opacity-90 rounded-bl-lg px-[7px] py-[2px] bottom-0 left-0 rounded-tr-xl shadow-xl items-center">
                                 <div className="my-auto">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill={reviewColor(pro_data.rating)} viewBox="0 0 24 24" stroke-width="1.5" stroke={reviewColor(pro_data.rating)} className="lg:w-4 stroke-white lg:h-3 w-3 h-3 mr-1 fill-white">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                     </svg>
 
                                 </div>
-                                <div className=" lg:text-sm !text-[12px] text-white ml-1">{pro_data.rating}</div>
+                                <div className=" lg:text-xs !text-[12px] text-white ml-1">{pro_data.rating}</div>
                             </span>
-                            {pro_data.offers ?
+
+
+
+                                {/* {pro_data.offers ?
                                 <div className="absolute right-2 top-2 bg-red-500 rounded-full text-white text-sm p-[5px] shadow-lg text-center overflow-hidden leading-3 label-circle w-[3rem] h-[3rem]" >
                                     {pro_data.offers.value ?
                                         <>{parseFloat(pro_data.offers.value).toFixed(0)} % OFF</>
                                         : <>BUY1 GET1</>}</div> : null}
                             {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`skeleton-box flex absolute left-0 top-0 w-fit text-white px-3 items-center rounded-tl-lg rounded-br-2xl text-[9px] sm:py-1 py-[2px] sm:text-xs h-fit`}><span className='items-center'>{pro_data.label.label_text}</span>
-                                <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
-                        </Link>
-                    </figure>
-
+                                <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null} */}
+                            </Link>
+                        </figure>
+                    </Badge.Ribbon>
                     <div className="bg-white px-2 py-1 rounded-lg rounded-t-none">
                         <div className='flex justify-between'>
                             {pro_data.prices ? pro_data.prices[0].price.offer_price != pro_data.prices[0].price.regular_price ?
@@ -144,46 +149,49 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                 : null}
             {pro_data && isRowView ?
                 <div className="rounded-lg border border-slate-200 my-1 relative bg-white shadow-sm">
-                    <div className="grid grid-cols-12 p-3 gap-x-3">
-                        <div className=" relative md:col-span-2 col-span-4 h-fit my-auto">
-                            <Image src={pro_data.images.featured_image} height={150} width={150} className=" border border-slate-200 rounded-lg w-full my-auto" alt="pro_Image" />
-                            <span className="flex absolute bg-amber-400 opacity-90 rounded-bl-lg px-[4px] py-[2px] bottom-0 left-0 rounded-tr-xl shadow-xl items-center ">
+                    <Badge.Ribbon text={pro_data.label ? pro_data.label.label_text : null} color={pro_data.label ? pro_data.label.color_code : "cyan"} className='skeleton-box'>
+
+                        <div className="grid grid-cols-12 p-3 gap-x-3">
+                            
+                            <div className=" relative md:col-span-2 col-span-4 h-fit my-auto">
+                                <Image src={pro_data.images.featured_image} height={150} width={150} className=" border border-slate-200 rounded-lg w-full my-auto" alt="pro_Image" />
+                                <span className="flex absolute bg-amber-500 opacity-90 rounded-bl-lg px-[5px] py-1 bottom-0 left-0 rounded-tr-xl shadow-xl items-center ">
                                 <div className="">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill={reviewColor(pro_data.rating)} viewBox="0 0 24 24" stroke-width="1.5" stroke={reviewColor(pro_data.rating)} className="lg:w-4 stroke-white lg:h-3 w-3 h-3 mr-1 fill-white">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                                     </svg>
                                 </div>
-                                <div className="  !text-[10px] text-white ml-1 leading-[0px]">{pro_data.rating}</div>
+                                <div className=" text-xs text-white ml-1 leading-[0px]">{pro_data.rating}</div>
                             </span>
-                        </div>
-                        <div className="rounded-lg flex-col flex-grow justify-between flex md:col-span-9 col-span-8  space-y-2">
-                            <p className=" xl:text-base text-life font-semibold sm:text-sm text-[10px] leading-3 overflow-hidden" style={{ WebkitLineClamp: "2", WebkitBoxOrient: "vertical", display: "-webkit-box" }}>{pro_data.title}</p>
-                            <div className='whitespace-nowrap overflow-hidden text-ellipsis w-full'>
-                                {pro_data.categories ?
-                                    pro_data.categories.map((cat: any) => (
-                                        <a href={`products?categories=${cat.slug}`} className="whitespace-normal inline-flex lg:text-[10px] text-[9px] border border-gray-300 hover:bg-gray-300 hover-border-white mr-2 rounded-md px-2 bg-[#f4f7ff] py-[2px] text-life">{cat.name}</a>
-                                    ))
-                                    : null}
                             </div>
-                            {pro_data.offers ?
-                                <div className="offers-btn ">{pro_data.offers.value ? <>FLAT {parseFloat(pro_data.offers.value).toFixed(0)}% OFF</> : <>{pro_data.offers.is_special}</>}</div> : null}
-                            {pro_data.prices ? pro_data.prices[0].price.offer_price != pro_data.prices[0].price.regular_price ?
-                                <span className='whitespace-nowrap'>
-                                    <b className='text-red-500 '>
-                                        <span className="md:text-xs text-[10px]">{currency}</span> <span className="lg:text-lg sm:text-base text-base font-semibold">{pro_data.prices[0].price.offer_price}</span>
-                                    </b>
-                                    <b className='sm:mx-3 ml-1 text-blue-400 sm:inline-block hidden'>
-                                        <span className="sm:text-xs text-[10px] line-through sm:inline-block hidden">{currency}</span> <span className="sm:text-xs  line-through text-[10px]">{pro_data.prices[0].price.regular_price}</span>
-                                    </b>
-                                </span>
-                                : <div className='text-blue-400' >
-                                    <span className="md:text-xs text-[10px] ">{currency}</span> <span className="lg:text-lg sm:text-base text-sm font-semibold">{pro_data.prices ? parseFloat(pro_data.prices[0].price.regular_price).toFixed(2) : null}</span>
-                                </div> : null}
+                            <div className="rounded-lg flex-col flex-grow justify-between flex md:col-span-9 col-span-8  space-y-2">
+                                <p className=" xl:text-base text-life font-semibold sm:text-sm text-[10px] leading-3 overflow-hidden" style={{ WebkitLineClamp: "2", WebkitBoxOrient: "vertical", display: "-webkit-box" }}>{pro_data.title}</p>
+                                <div className='whitespace-nowrap overflow-hidden text-ellipsis w-full'>
+                                    {pro_data.categories ?
+                                        pro_data.categories.map((cat: any) => (
+                                            <a href={`products?categories=${cat.slug}`} className="whitespace-normal inline-flex lg:text-[10px] text-[9px] border border-gray-300 hover:bg-gray-300 hover-border-white mr-2 rounded-md px-2 bg-[#f4f7ff] py-[2px] text-life">{cat.name}</a>
+                                        ))
+                                        : null}
+                                </div>
+                                {pro_data.offers ?
+                                    <div className="offers-btn ">{pro_data.offers.value ? <>FLAT {parseFloat(pro_data.offers.value).toFixed(0)}% OFF</> : <>{pro_data.offers.is_special}</>}</div> : null}
+                                {pro_data.prices ? pro_data.prices[0].price.offer_price != pro_data.prices[0].price.regular_price ?
+                                    <span className='whitespace-nowrap'>
+                                        <b className='text-red-500 '>
+                                            <span className="md:text-xs text-[10px]">{currency}</span> <span className="lg:text-lg sm:text-base text-base font-semibold">{pro_data.prices[0].price.offer_price}</span>
+                                        </b>
+                                        <b className='sm:mx-3 ml-1 text-blue-400 sm:inline-block hidden'>
+                                            <span className="sm:text-xs text-[10px] line-through sm:inline-block hidden">{currency}</span> <span className="sm:text-xs  line-through text-[10px]">{pro_data.prices[0].price.regular_price}</span>
+                                        </b>
+                                    </span>
+                                    : <div className='text-blue-400' >
+                                        <span className="md:text-xs text-[10px] ">{currency}</span> <span className="lg:text-lg sm:text-base text-sm font-semibold">{pro_data.prices ? parseFloat(pro_data.prices[0].price.regular_price).toFixed(2) : null}</span>
+                                    </div> : null}
+                            </div>
                         </div>
-                    </div>
-
-                    {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`  skeleton-box flex absolute left-2 top-2 w-fit text-white px-3 items-center rounded-tl-lg rounded-br-2xl text-[9px]  py-[2px]  h-fit`}><span className='items-center'>{pro_data.label.label_text}</span>
-                        <div className={`${parts && parts[1] === 'en' ? "ml-2" : "mr-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
+                    </Badge.Ribbon>
+                    {/* {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`  skeleton-box flex absolute left-2 top-2 w-fit text-white px-3 items-center rounded-tl-lg rounded-br-2xl text-[9px]  py-[2px]  h-fit`}><span className='items-center'>{pro_data.label.label_text}</span>
+                        <div className={`${parts && parts[1] === 'en' ? "ml-2" : "mr-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null} */}
                     <div className="absolute bottom-2 right-2 flex h-7 ">
                         {addedToCartClicked && getProductQuantity(pro_data.id) > 0 ?
                             <>
