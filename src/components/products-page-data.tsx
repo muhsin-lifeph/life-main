@@ -13,6 +13,7 @@ import { ProductsSkeleton } from "./productsSkeleton";
 import * as Slider from '@radix-ui/react-slider';
 import getBrandProductData from "@/lib/getBrandProductData";
 import Link from "next/link";
+import { setOrientation } from "@material-tailwind/react/components/Tabs/TabsContext";
 const ProductsPageData = ({ filterPath, categoryData, brandsData, isSearchPage, selectedBrands, menuData, isBrandsPage }: { isSearchPage: boolean, selectedBrands: any, categoryData: any, brandsData: any, filterPath: any, menuData: any, isBrandsPage: boolean }) => {
 
     const { query } = useRouter()
@@ -148,6 +149,10 @@ const ProductsPageData = ({ filterPath, categoryData, brandsData, isSearchPage, 
     }
 
     useEffect(() => {
+        // if(localStorage.getItem("user-preference-view-type") === "row"){
+        //     setIsRowView(true)
+        // }
+
         getCategoryData().then(cat_data => {
             setCatData(cat_data)
         })
@@ -157,6 +162,16 @@ const ProductsPageData = ({ filterPath, categoryData, brandsData, isSearchPage, 
         setAnimateSpin(true)
         fetchData(typeGenerate(menuData[0]), noOfProducts, true, "")
         setNoOfProducts(c => c + 40)
+    }
+
+    const setUserPreference = (typeOfView: string) => {
+        if (typeOfView === "row") {
+            setIsRowView(true)
+        }
+        else {
+            setIsRowView(false)
+        }
+        // localStorage.setItem("user-preference-view-type", typeOfView)
     }
     return (
         <div className=' max-w-[1450px] mx-auto  sm:px-[10px] px-[5px]'>
@@ -186,16 +201,16 @@ const ProductsPageData = ({ filterPath, categoryData, brandsData, isSearchPage, 
                             </div>
                         </div>
                         <div className="ml-5">
-                            <input type="radio" defaultChecked={true} id="grid-view" name="col-type" className="hidden peer" value="chatWithUs" />
-                            <label htmlFor="grid-view" onClick={() => setIsRowView(false)} className="cursor-pointer -m-2  p-2 mr-2 text-gray-400 hover:text-gray-500 sm:ml-7 peer-checked:text-blue-500">
+                            <input type="radio" checked={!isRowView} id="grid-view" name="col-type" className="hidden peer" value="chatWithUs" />
+                            <label onClick={() => setUserPreference("col")} htmlFor="grid-view" className="cursor-pointer -m-2  p-2 mr-2 text-gray-400 hover:text-gray-500 sm:ml-7 peer-checked:text-blue-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-5 h-5" viewBox="0 0 16 16">
                                     <path d="M1 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4zM1 9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V9zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V9z" />
                                 </svg>
                             </label>
                         </div>
 
-                        <input type="radio" id="list-view" name="col-type" className="hidden peer" value="chaWithUs" />
-                        <label htmlFor="list-view" className="-m-2 cursor-pointer p-2 text-gray-400 hover:text-gray-500 peer-checked:text-blue-500" onClick={() => setIsRowView(true)}>
+                        <input type="radio" checked={isRowView} id="list-view" name="col-type" className="hidden peer" value="chaWithUs" />
+                        <label onClick={() => setUserPreference("row")} htmlFor="list-view" className="-m-2 cursor-pointer p-2 text-gray-400 hover:text-gray-500 peer-checked:text-blue-500">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-5 h-5" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z" />
                                 <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z" />
