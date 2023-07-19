@@ -22,11 +22,11 @@ const PageStructure: FC<compProps> = ({ data, lang }) => {
             {
                 data.section_type === "dynamic_slider_grid" ?
                     <>
-                        <div className="sm:hidden block">
+                        <div className="min-[566px]:hidden block">
                             <DynamicSliderGrid data={data} isDesktop={false} isMobile={!data.settings.hide_in_mobile_web || data.settings.hide_in_mobile_web === false} />
                         </div>
 
-                        <div className="sm:block hidden  px-[10px] mx-auto">
+                        <div className="max-[565px]:hidden block  px-[10px] mx-auto">
                             <DynamicSliderGrid data={data} isDesktop={!data.settings.hide_in_desktop_web || data.settings.hide_in_desktop_web === false} isMobile={false} />
                         </div>
                     </>
@@ -37,12 +37,12 @@ const PageStructure: FC<compProps> = ({ data, lang }) => {
                 {
                     data.section_type === "dynamic_grid" ?
                         <>
-                            <div className={`sm:hidden block`} style={{ background: data.settings.background_value }}>
+                            <div className={`min-[566px]:hidden block`} style={{ background: data.settings.background_value }}>
                                 {data.settings.show_section_title &&
                                     <h4 className="md:text-xl sm:text-lg text-base font-bold flex-1">{data.section_title}</h4>}
                                 <DynamicGrid data={data} isDesktop={false} isMobile={!data.settings.hide_in_mobile_web || data.settings.hide_in_mobile_web === false} />
                             </div>
-                            <div className="sm:block hidden" style={{ background: data.settings.background_value }}>
+                            <div className="max-[565px]:hidden block" style={{ background: data.settings.background_value }}>
                                 {data.settings.show_section_title &&
                                     <h4 className="md:text-xl sm:text-lg text-base font-bold flex-1 text-center">{data.section_title}</h4>}
                                 <DynamicGrid data={data} isDesktop={!data.settings.hide_in_desktop_web || data.settings.hide_in_desktop_web === false} isMobile={false} />

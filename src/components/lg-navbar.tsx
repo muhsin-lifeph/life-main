@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useLanguage } from "@/hooks/useLanguage"
 import LgScreenSubMenu from "./lg-screen-sub-menu"
 import Example from "./headlessui-menu"
-const LgNavbar = ({ setSheetOpen, setLocationModal, searchButtonOnMouseEnter, SearchLoadingState, queryData, isArabic, children, searchSuggestions, setLanguageModal, searchButtonOnClick, searchData }: { setSheetOpen: any, searchData: any, searchButtonOnClick: any, SearchLoadingState: any, setLanguageModal: any, children: any, queryData: any, isArabic: boolean, searchSuggestions: any, searchButtonOnMouseEnter: any, setLocationModal: any }) => {
+const LgNavbar = ({  isSheetOpen,  setSheetOpen, setLocationModal, searchButtonOnMouseEnter, SearchLoadingState, queryData, isArabic, children, searchSuggestions, setLanguageModal, searchButtonOnClick, searchData }: {  isSheetOpen:any,  setSheetOpen:any, searchData: any, searchButtonOnClick: any, SearchLoadingState: any, setLanguageModal: any, children: any, queryData: any, isArabic: boolean, searchSuggestions: any, searchButtonOnMouseEnter: any, setLocationModal: any }) => {
 
   const { t, countries, languages } = useLanguage()
 
@@ -16,7 +16,7 @@ const LgNavbar = ({ setSheetOpen, setLocationModal, searchButtonOnMouseEnter, Se
       </Link>
       <div className="flex items-center w-full md:border-none border-2 rounded-lg md:rounded-none border-slate-200 " >
         <div className="relative w-full">
-          <div className="relative group-search cursor-pointer" id="lg-screen-search" onChange={(e) => { searchButtonOnMouseEnter((e.target as HTMLInputElement).value) }} onMouseDown={(e) => { searchButtonOnClick(true) }}   >
+          <div className="relative group-search cursor-pointer" id="lg-screen-search" onChange={(e) => { searchButtonOnMouseEnter((e.target as HTMLInputElement).value) }}  onMouseDown={(e) => { searchButtonOnClick(true) }}   >
             <div className={`absolute inset-y-0  flex items-center pointer-events-none ${isArabic ? 'right-0 pr-3 ' : 'left-0 pl-3'}`}>
               <svg aria-hidden="true" className="w-5 h-5 text-gray-500 mr-3" fill="currentColor"
                 viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -28,11 +28,11 @@ const LgNavbar = ({ setSheetOpen, setLocationModal, searchButtonOnMouseEnter, Se
             </div>
             {SearchLoadingState ?
               <svg fill="none" className={`animate-spin w-5 h-5 absolute inline ${isArabic ? "left-8" : "right-8"}  inset-y-0 m-auto w-4 h-4 mx-2`} stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" shape-rendering="geometricPrecision" viewBox="0 0 24 24" height="24" width="24" ><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg> : ""}
-            <Example searchSuggestions={searchSuggestions} searchData={searchData} queryData={queryData} isArabic={isArabic} />
+            <Example searchSuggestions={searchSuggestions} searchData={searchData} queryData={queryData} isArabic={isArabic}/>
           </div>
         </div>
       </div>
-      <LgScreenSubMenu setSheetOpen={setSheetOpen} countries={countries} languages={languages} setLanguageModal={setLanguageModal} setLocationModal={setLocationModal} />
+      <LgScreenSubMenu setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen} countries={countries} languages={languages} setLanguageModal={setLanguageModal} setLocationModal={setLocationModal} />
     </div>
   )
 }
