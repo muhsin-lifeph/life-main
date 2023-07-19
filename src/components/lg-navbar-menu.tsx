@@ -249,8 +249,8 @@ const LgNavbarMenu = ({ setOverlay, data, brands_data }: { setOverlay: any, data
     animate(x, 0, { duration: 0.1 })
 
     return (
-        <div className='bg-white md:block hidden relative shadow'>
-            <NavigationMenu.Root className="max-w-[1440px] mx-auto ">
+        <div className='bg-white md:block hidden  shadow'>
+            <NavigationMenu.Root className="max-w-[1440px] relative mx-auto ">
                 <NavigationMenu.List className="center m-0  list-none grid grid-cols-12 items-center ">
                     <NavigationMenu.Item onMouseOver={() => {
                         setOverlay(true)
@@ -411,8 +411,8 @@ const LgNavbarMenu = ({ setOverlay, data, brands_data }: { setOverlay: any, data
                                 <li key={"brands-section"} >
                                     <div className="grid grid-cols-5 gap-3  mx-auto" id="brands-section">
                                         {brands_data.data.brands.map((bd: any) => (
-                                            <Link href={`/brand/${bd.slug}`}>
-                                                <Image className="mx-auto rounded-full border border-white bg-white shadow-md" width={120} height={120} src={bd.images.logo} alt="" />
+                                            <Link href={`/brand/${bd.slug}`} className="group">
+                                                <Image className="mx-auto rounded-full border border-white bg-white shadow-md group-hover:shadow-xl" width={120} height={120} src={bd.images.logo} alt="" />
                                                 <h5 className="text-center mt-3">{bd.name}</h5>
                                             </Link>
                                         ))}

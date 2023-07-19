@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from "../redux/store";
 import { CommandDemo } from "./cmd-cart"
 
-const LgScreenSubMenu = ({ countries, languages, setLanguageModal, setLocationModal }: { countries: any, languages: any, setLanguageModal: any, setLocationModal: any }) => {
+const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal, setLocationModal }: { setSheetOpen:any, countries: any, languages: any, setLanguageModal: any, setLocationModal: any }) => {
 
     const { t, locale } = useLanguage()
     const [domLoaded, setDomLoaded] = useState(false);
@@ -73,7 +73,7 @@ const LgScreenSubMenu = ({ countries, languages, setLanguageModal, setLocationMo
                     </svg>
                     <div className="text-[11px] text-center text-white">Account</div>
                 </Link>
-                : <a href="#" className=" flex-col md:hidden lg:flex hidden pl-5" onClick={() => { setLocationModal(true) }}>
+                : <button  className=" flex-col md:hidden lg:flex hidden pl-5" onClick={() => { setSheetOpen(true) }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                         stroke="currentColor" className=" my-auto text-white w-7 h-7 mx-auto">
                         <path strokeLinecap="round" strokeLinejoin="round"
@@ -81,7 +81,7 @@ const LgScreenSubMenu = ({ countries, languages, setLanguageModal, setLocationMo
                     </svg>
 
                     <div className="text-[11px] text-center text-white">{t.navbar.account}</div>
-                </a>}
+                </button>}
 
             <a href="#" className=" justify-between  flex-col md:hidden lg:flex hidden   pl-5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"

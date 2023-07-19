@@ -1,7 +1,7 @@
 import { Dialog, Transition, RadioGroup, Listbox } from "@headlessui/react";
 import React, { Fragment, useEffect } from "react"
 import ModalContainer from "./ui/modal-container";
-import { Tabs, Tab, TabsHeader, TabsBody, TabPanel } from "@material-tailwind/react"
+import { Tabs, Tab, TabsHeader, TabsBody, TabPanel, Drawer } from "@material-tailwind/react"
 import PhoneInput from "react-phone-number-input";
 import { useState } from "react"
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -14,26 +14,31 @@ import { CalendarIcon, CaretSortIcon, CheckIcon, Cross1Icon, EnvelopeClosedIcon,
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "./ui/command";
+import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronDown, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import { AiFillCheckCircle, AiOutlineInfoCircle, AiOutlineLoading3Quarters } from 'react-icons/ai'
+import OtpInput from 'react-otp-input';
+import { MdAlternateEmail } from "react-icons/md"
+import { motion } from "framer-motion";
+import { BsPatchCheckFill } from "react-icons/bs"
+import { useWindowDimensions } from "@/hooks/useWindowDimensions";
 
-const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, setLocationModal, setnotValidOTPPageVisib, setaddNewAddress }: { showModal: boolean, setCloseModal: any, setaddNewAddress: any, setaddnewAddressFormVisibility: any, setLocationModal: any, setnotValidOTPPageVisib: any }) => {
+const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setaddnewAddressFormVisibility, setLocationModal, setnotValidOTPPageVisib, setaddNewAddress }: { setSheetOpen: any, isSheetOpen: any, showModal: boolean, setCloseModal: any, setaddNewAddress: any, setaddnewAddressFormVisibility: any, setLocationModal: any, setnotValidOTPPageVisib: any }) => {
     const { data: session } = useSession();
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [isPhoneNumberValid, setPhoneNumberValidState] = useState(false);
-    const [signInUsing, signInSet] = useState("");
-    const [isEmailValid, setEmailValidState] = useState(false);
+    const [isPhoneNumberValid, setPhoneNumberValidState] = useState<any>("");
+    const [signInUsing, signInSet] = useState({ value: "", type: "" });
+    const [isEmailValid, setEmailValidState] = useState<any>(null);
     const [otpPageVisibility, setOtpPageVisibility] = useState(false);
     const [state, setState] = useState('');
     const [countDownVisible, setCountDownVisible] = useState(false);
     const handleChange = (state: string) => setState(state);
     const [phoneNumberforOTP, setPhoneNumberforOtp] = useState('');
-    const [isSheetOpen, setSheetOpen] = useState(false);
-    const ref = React.useRef<SheetRef>();
-    const [value, setValue] = React.useState("")
-    const [open, setOpen] = useState(false)
-    const [countriesData, setCountriesData] = useState<any>(null)
+    const [LoginSignUpPageVisibility, setLoginSignUpPageVisibility] = useState(true)
+
+    const [selectedCountryData, setSelectedCountryData] = useState<any>(null)
+
     var addressId = session ? (session.token.addresses.length != 0 ? (session.token.addresses[session.token.addresses.length - 1]?.id) + 1 : 12345 + 1) : ""
 
     const { time, start, pause, reset, status } = useTimer({
@@ -43,13 +48,15 @@ const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, s
 
 
     async function otpIsValid(otpValue: string) {
-        if (signInUsing === "Phone") {
+        debugger
+        if (signInUsing.type === "Phone") {
             await signIn('credentials', { phone: phoneNumberforOTP, code: otpValue, isPhone: "true", redirect: false })
                 .then(async (res) => {
                     if (res?.ok) {
                         setaddNewAddress(true);
                         setaddnewAddressFormVisibility(false)
                         setLocationModal(false);
+                        setSheetOpen(false)
                     }
                     else {
                         // console.log(error)
@@ -65,27 +72,29 @@ const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, s
                         setaddNewAddress(true);
                         setaddnewAddressFormVisibility(false)
                         setLocationModal(false);
+                        setSheetOpen(false)
                     }
                     else {
                         setnotValidOTPPageVisib(true)
                     }
                 })
             setPhoneNumberValidState(false)
+            setEmailValidState(false)
         }
     }
 
 
     function sendOTPtoPhoneNo(pHNumber: string, type: string) {
-
+        debugger
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         var raw
-        if (type === "phone") {
+        if (type === "Phone") {
             raw = JSON.stringify({
                 "phone": pHNumber
             });
         }
-        else if (type === "email") {
+        else if (type === "Email") {
             raw = JSON.stringify({
                 "email": pHNumber
             });
@@ -96,7 +105,6 @@ const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, s
             headers: myHeaders,
             body: raw,
         };
-        console.log(pHNumber);
         setPhoneNumberforOtp(pHNumber)
         const res = fetch("https://prodapp.lifepharmacy.com/api/auth/request-otp", requestOptions)
             .then(response => response.json())
@@ -130,31 +138,46 @@ const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, s
         is_validated: 1
     });
 
+    const [phoneNumberValidTimeout, setPhoneNumberValidTimeout] = useState<any>(null)
 
     function isValidCredentials(value: string) {
-        if (value != null) {
-            if (isValidPhoneNumber(value)) {
-                setPhoneNumberValidState(true);
-                setFormData({ ...formData, phone: value });
-                signInSet("Phone");
+        debugger
+        setPhoneNumberValidState("loading")
+        clearTimeout(phoneNumberValidTimeout)
+        const timeout = setTimeout(() => {
+            if (value != null) {
+                if (isValidPhoneNumber(value)) {
+                    setPhoneNumberValidState("success");
+                    setFormData({ ...formData, phone: value });
+                    signInSet({ type: "Phone", value: value });
+                }
+                else {
+                    setPhoneNumberValidState("failed");
+                }
             }
-            else {
-                setPhoneNumberValidState(false);
-            }
-        }
+        }, 400)
+        setPhoneNumberValidTimeout(timeout)
     }
 
+    function isValidEmail(value: string): void {
+        setEmailValidState("loading")
+        clearTimeout(phoneNumberValidTimeout)
+        const timeout = setTimeout(() => {
+            if (value !== "") {
+                if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
+                    setEmailValidState("success");
+                    signInSet({ type: "Email", value: value });
 
-    function isValidEmail(e: React.ChangeEvent<HTMLInputElement>): void {
-        const emailAddress: string = e.target.value;
-        if (emailAddress !== null) {
-            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailAddress)) {
-                setEmailValidState(true);
-                signInSet("Email");
-            } else {
-                setEmailValidState(false);
+                } else {
+                    setEmailValidState("failed");
+                }
             }
-        }
+            else {
+                setEmailValidState("failed");
+
+            }
+        }, 400)
+        setPhoneNumberValidTimeout(timeout)
     }
 
     function startTimer() {
@@ -166,308 +189,230 @@ const AuthModal = ({ showModal, setCloseModal, setaddnewAddressFormVisibility, s
         reset();
         return 0;
     }
-    const frameworks = [
-        {
-            value: "next.js",
-            label: "Next.js",
-        },
-        {
-            value: "sveltekit",
-            label: "SvelteKit",
-        },
-        {
-            value: "nuxt.js",
-            label: "Nuxt.js",
-        },
-        {
-            value: "remix",
-            label: "Remix",
-        },
-        {
-            value: "astro",
-            label: "Astro",
-        },
-    ]
+
     function isValidPhoneNoInput(SetOtpVisb: boolean) {
-
         if (SetOtpVisb) {
-            (document.getElementById("loginOrSignup") as HTMLInputElement).classList.add("hidden")
+            setLoginSignUpPageVisibility(false)
             setOtpPageVisibility(true);
-
             setState('');
             startTimer();
 
-            if (signInUsing === "Phone") {
-                const phoneNo = ((document.getElementById("phoneInputOTP") as HTMLInputElement).value).replace(/\+|\s/g, "").trim()
-                sendOTPtoPhoneNo(phoneNo, "phone");
-            }
-            else {
-                const emailId = (document.getElementById("emailInput") as HTMLInputElement).value
+            sendOTPtoPhoneNo(signInUsing.value, signInUsing.type);
 
-                // document.getElementById("emailInput").value
-                sendOTPtoPhoneNo(emailId, "email");
-            }
         }
         else {
-            (document.getElementById("loginOrSignup") as HTMLInputElement).classList.remove("hidden")
+            setLoginSignUpPageVisibility(true)
             setOtpPageVisibility(false);
             stopTimer()
         }
     }
 
-    const [CurrentCountry, setCurrentCountry] = useState<any>(null)
-
+    const [countriesData, setCountriesData] = useState<any>(null)
     useEffect(() => {
-        fetch("https://restcountries.com/v2/all?fields=name,flags,callingCodes").then(res => res.json()).then(data => setCountriesData(data))
-
-        fetch("https://ipapi.co/json").then(res => res.json()).then((data: any) => setCurrentCountry(data.country_name))
+        fetch("https://restcountries.com/v2/region/Asia?fields=name,alpha2Code,callingCodes").then(res => res.json()).then(countriesData => {
+            setCountriesData(countriesData)
+            fetch("https://ipapi.co/json").then(res => res.json()).then((data: any) => {
+                debugger
+                const selectedCountriesDatas = countriesData.filter((countryData: any) => countryData.name === data.country_name)
+                setSelectedCountryData(selectedCountriesDatas)
+            }
+            )
+        })
     }, [])
+    const [countriesDrawerState, setCountriesDrawerState] = useState(false)
+    const {width} = useWindowDimensions()
+
+    const variants = {
+        closed: {
+            bottom: "-50%",
+            opacity: 0,
+            position: "fixed",
+            left: 0,
+            right: 0,
+        },
+        open: {
+            bottom: width>576?"30%":0,
+            opacity: 1,
+            position: "fixed",
+            left: 0,
+            right: 0,
+        },
+    };
+
 
     return (
 
         <>
-
-            <button onClick={() => setSheetOpen(true)}>Open sheet</button>
-            <Sheet
-                ref={ref}
-                initialSnap={0}
-                snapPoints={[-50, 100, 0]}
-                detent="content-height"
-                isOpen={isSheetOpen} onClose={() => setSheetOpen(false)}>
-                <Sheet.Container className="px-4  py-2">
-                    <Sheet.Header />
-                    <Sheet.Content >
-                        <div className=" flex justify-between border-b-2 border-muted hidden">
-                            <h4 className="font-semibold text-xl items-center">Login or sign up</h4>
-                            <div>
-                                <Cross1Icon className="w-6 h-6" />
-                            </div>
+            <div onClick={() => { countriesDrawerState ? setCountriesDrawerState(false) : setSheetOpen(false) }} className={isSheetOpen || countriesDrawerState ? "bg-black inset-0 fixed z-50 bg-opacity-50 backdrop-blur-sm" : ""}></div>
+            <motion.div
+                animate={isSheetOpen ? "open" : "closed"}
+                //@ts-ignore
+                variants={variants} className="z-50 bg-white max-w-xl mx-auto py-1 sm:rounded-3xl rounded-3xl rounded-b-none px-4">
+                <div>
+                    <div className=" flex justify-between border-b-2 border-muted pt-3 font-semibold ">
+                        <h4 className=" sm:text-2xl text-base items-center">Login or Sign up</h4>
+                        <div className="cursor-pointer" onClick={()=>{setSheetOpen(false)}}>
+                            <Cross1Icon className="sm:w-6 sm:h-6 w-4 h-4" />
                         </div>
-                        <div className=" flex justify-between border-b-2 border-muted ">
-                            <h4 className="font-semibold text-xl items-center">Select a Country</h4>
-                            <div>
-                                <Cross1Icon className="w-6 h-6" />
-                            </div>
-                        </div>
-                        <form className="space-y-6 hidden" action="#" >
-                            <div className="mt-3 flex-1">
-                                <Tabs value="phone" className="border-none">
-                                    <TabsHeader className="bg-slate-100">
-                                        <Tab key="phone" value="phone" className="z-20">
-                                            <span className="sm:text-base text-xs">Using Phone</span>
-                                        </Tab>
-                                        <Tab key="email" value="email">
-                                            <span className="sm:text-base text-xs">Using Email</span>
-                                        </Tab>
-                                    </TabsHeader>
-                                    <TabsBody >
-                                        <TabPanel key="phoneinput" value="phone" >
-                                            <div>
-                                                <label className=" block mb-2 font-medium text-gray-900 sm:text-base text-sm
- ">Enter your mobile number <span className="text-red-500">*</span></label>
-                                                <div className="relative border border-gray-300 pl-3 rounded-lg">
-                                                    <PhoneInput
-                                                        placeholder="Enter phone number"
-                                                        value={phoneNumber}
-                                                        onChange={isValidCredentials}
-                                                        international
-                                                        defaultCountry="AE"
-                                                        id="phoneInputOTP"
-                                                    />
-                                                    {isPhoneNumberValid ?
-                                                        <div
-                                                            className="absolute top-[21px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500"
-                                                        >
-                                                            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                                                            </svg>
-
-                                                        </div> : ""}
-
-                                                </div>
-                                            </div>
-                                        </TabPanel>
-                                        <TabPanel key="emailInput" value="email" >
-                                            <div className="relative">
-                                                <label className="block mb-2  font-medium text-gray-900
-">Please enter your email <span className="text-red-500">*</span></label>
-                                                <input onChange={isValidEmail} id="emailInput" type="text" name="email" className="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-0 focus:border-0 block w-full p-2.5" placeholder="Your Email Address" required />
-                                                {isEmailValid ?
-                                                    <div
-                                                        className="absolute top-[60px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500">
-                                                        <i className="">
-                                                            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                                                            </svg>
-                                                        </i>
-                                                    </div> : ""}
-                                            </div>
-                                        </TabPanel>
-                                    </TabsBody>
-                                </Tabs>
-                            </div>
-                            <div className="mt-4">
-                                <div className="flex justify-between mb-4">
-                                    <div className="flex items-start">
-                                        <div className="flex items-center h-5">
-                                        </div>
-                                        <div className="sm:text-sm  text-gray-500 text-xs">
-                                            By continuing, I agree to the <span><a href="#" className="text-blue-500">Terms of Use</a></span> & <span><a href="#" className="text-blue-500">Privacy Policy</a></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button" disabled={isPhoneNumberValid || isEmailValid ? false : true} onClick={() => { isValidPhoneNoInput(true) }} className={"bg-blue-500 disabled:bg-blue-300" + (" flex justify-center w-full   focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ")}>
-                                    <span className="mr-4 text-white">PROCEED</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-3 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
-
-                        <Command className="rounded-lg border shadow-md ">
-                            <CommandInput placeholder="Type a command or search..." />
-                            <CommandList>
-                                <CommandEmpty>No results found.</CommandEmpty>
-                                <CommandGroup >
-                                    {countriesData ?
-                                        countriesData.map((countr: any) => (
-                                            <CommandItem className={`space-x-3 items-center ${CurrentCountry === countr.name ? "bg-slate-200 " : ""}`}>
-                                                <Image src={countr.flags.svg} width="50" height="50" className="w-[2.5rem] h-[2.5rem] rounded-full object-cover" alt={countr.name} />
-                                                <p className="text-base">{countr.name}</p>
-                                                <p className="text-base font-semibold">(+{countr.callingCodes})</p>
-                                            </CommandItem>
-                                        ))
-                                        : null}
-                                </CommandGroup>
-                                <CommandSeparator />
-                            </CommandList>
-                        </Command>
-                    </Sheet.Content>
-                </Sheet.Container>
-                <Sheet.Backdrop />
-            </Sheet>
-            <ModalContainer showModal={showModal} setCloseModal={setCloseModal}>
-                <Dialog.Panel className="w-full sm:max-w-lg max-w-xs transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <div id="loginOrSignup">
-                        <Dialog.Title
-                            as="h3"
-                            className="sm:text-2xl font-bold text-blue-500 mb-3"
-                        >
-                            <h3>Login Or SignUp</h3>
-                        </Dialog.Title>
-
-                        <form className="space-y-6" action="#" >
-                            <div className="mt-3 flex-1">
-                                <Tabs value="phone" className="border-none">
-                                    <TabsHeader className="bg-slate-100">
-                                        <Tab key="phone" value="phone" className="z-20">
-                                            <span className="sm:text-base text-xs">Using Phone</span>
-                                        </Tab>
-                                        <Tab key="email" value="email">
-                                            <span className="sm:text-base text-xs">Using Email</span>
-                                        </Tab>
-                                    </TabsHeader>
-                                    <TabsBody >
-                                        <TabPanel key="phoneinput" value="phone" >
-                                            <div>
-                                                <label className=" block mb-2 font-medium text-gray-900 sm:text-base text-sm">Enter your mobile number <span className="text-red-500">*</span></label>
-                                                <div className="relative border border-gray-300 pl-3 rounded-lg">
-                                                    <PhoneInput
-                                                        placeholder="Enter phone number"
-                                                        value={phoneNumber}
-                                                        onChange={isValidCredentials}
-                                                        international
-                                                        defaultCountry="AE"
-                                                        id="phoneInputOTP"
-                                                    />
-                                                    {isPhoneNumberValid ?
-                                                        <div
-                                                            className="absolute top-[21px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500"
-                                                        >
-                                                            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                                                            </svg>
-
-                                                        </div> : ""}
-                                                </div>
-                                            </div>
-                                        </TabPanel>
-                                        <TabPanel key="emailInput" value="email" >
-                                            <div className="relative">
-                                                <label className="block mb-2  font-medium text-gray-900">Please enter your email <span className="text-red-500">*</span></label>
-                                                <input onChange={isValidEmail} id="emailInput" type="text" name="email" className="text-md font-semibold bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-0 focus:border-0 block w-full p-2.5" placeholder="Your Email Address" required />
-                                                {isEmailValid ?
-                                                    <div
-                                                        className="absolute top-[60px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500">
-                                                        <i className="">
-                                                            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                                                            </svg>
-                                                        </i>
-                                                    </div> : ""}
-                                            </div>
-                                        </TabPanel>
-                                    </TabsBody>
-                                </Tabs>
-                            </div>
-                            <div className="mt-4">
-                                <div className="flex justify-between mb-4">
-                                    <div className="flex items-start">
-                                        <div className="flex items-center h-5">
-                                        </div>
-                                        <div className="sm:text-sm  text-gray-500 text-xs">
-                                            By continuing, I agree to the <span><a href="#" className="text-blue-500">Terms of Use</a></span> & <span><a href="#" className="text-blue-500">Privacy Policy</a></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button" disabled={isPhoneNumberValid || isEmailValid ? false : true} onClick={() => { isValidPhoneNoInput(true) }} className={"bg-blue-500 disabled:bg-blue-300" + (" flex justify-center w-full   focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ")}>
-                                    <span className="mr-4 text-white">PROCEED</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-3 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </form>
                     </div>
-                    {otpPageVisibility ?
+                    {LoginSignUpPageVisibility ?
+                        <form className="sm:space-y-2 space-y-0 pb-2" action="#" >
+                            <div className="mt-3 flex-1">
+                                <Tabs value="phone" className="border-none">
+                                    <TabsHeader className="bg-slate-100">
+                                        <Tab key="phone" value="phone" className="z-20">
+                                            <span className="sm:text-base text-xs">Using Phone</span>
+                                        </Tab>
+                                        <Tab key="email" value="email">
+                                            <span className="sm:text-base text-xs">Using Email</span>
+                                        </Tab>
+                                    </TabsHeader>
+                                    <TabsBody >
+                                        <TabPanel key="phoneinput" value="phone" >
+                                            <div>
+                                                <label className=" block mb-2 font-medium text-gray-900 sm:text-lg text-sm">Enter your mobile number <span className="text-red-500">*</span></label>
 
-                        <div className="" id="otpPage">
-                            <h3 className="mb-3 text-2xl font-bold text-blue-500 ">OTP Code</h3>
-                            <label className="block mb-2 font-medium text-gray-900">Please check your {signInUsing} and enter the OTP code  <span className="text-red-500">*</span></label>
+                                                <Input onChange={(e) => isValidCredentials('+' + selectedCountryData[0].callingCodes + e.target.value)} className=" rounded-l-none" buttonLeft={
+                                                    <button onClick={(e) => {
+                                                        e.preventDefault()
+                                                        setCountriesDrawerState(true)
+                                                    }
+                                                    } className="bg-slate-100 flex items-center space-x-2 rounded-l-lg px-2 py-1 border border-slate-300 border-r-0">
+                                                        {selectedCountryData ? <> <Image src={`https://hatscripts.github.io/circle-flags/flags/${selectedCountryData[0].alpha2Code.toLowerCase()}.svg`} width="50" height="50" className="sm:w-8 sm:h-8 h-6 w-6" alt={countriesData[0].name} />
+                                                            <h5 className="font-semibold sm:text-lg text-sm">+{selectedCountryData[0].callingCodes}</h5>
+                                                        </>
+                                                            : null
+                                                        }
+                                                        <ChevronDown className="sm:w-12 sm:h-10 w-9 h-6" />
+                                                    </button>} iconRight={
+                                                        isPhoneNumberValid === "loading" ?
+                                                            <AiOutlineLoading3Quarters className="sm:w-5 sm:h-5 h-3 w-3 text-blue-500 animate-spin" /> :
+                                                            isPhoneNumberValid === "success" ?
+                                                                <AiFillCheckCircle className="sm:w-6 sm:h-6 h-4 w-4 text-green-500 " />
+                                                                : isPhoneNumberValid === "failed" ? <AiOutlineInfoCircle className="sm:w-6 sm:h-6 h-4 w-4 text-red-500 " />
+                                                                    : null} />
+
+                                            </div>
+                                        </TabPanel>
+                                        <TabPanel key="emailInput" value="email" >
+                                            <div>
+                                                <label className=" block mb-2 font-medium text-gray-900 sm:text-lg text-sm">Enter your Email Address <span className="text-red-500">*</span></label>
+                                                <Input
+                                                    iconRight={
+                                                        isEmailValid === "loading" ?
+                                                            <AiOutlineLoading3Quarters className="sm:w-5 sm:h-5 h-3 w-3 text-blue-500 animate-spin" /> :
+                                                            isEmailValid === "success" ?
+                                                                <AiFillCheckCircle className="sm:w-6 sm:h-6 h-4 w-4 text-green-500 " />
+                                                                : isEmailValid === "failed" ? <AiOutlineInfoCircle className="sm:w-6 sm:h-6 h-4 w-4 text-red-500 " /> : null
+                                                    }
+                                                    onChange={(e) => { isValidEmail(e.target.value) }} className="font-semibold sm:text-lg text-sm w-full  sm:py-2 py-1" iconLeft={
+                                                        <MdAlternateEmail className="sm:w-6 sm:h-6 h-5 w-5 text-slate-400" />
+                                                    } />
+                                            </div>
+                                        </TabPanel>
+                                    </TabsBody>
+                                </Tabs>
+                            </div>
+                            <div className="">
+                                <div className="flex justify-between mb-4">
+                                    <div className="flex items-start">
+                                        <div className="flex items-center h-5">
+                                        </div>
+                                        <div className="sm:text-sm  text-gray-500 text-xs">
+                                            By continuing, I agree to the <span><a href="#" className="text-blue-500">Terms of Use</a></span> & <span><a href="#" className="text-blue-500">Privacy Policy</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Button disabled={isPhoneNumberValid === "success" || isEmailValid === "success" ? false : true} className="w-full" onClick={() => { isValidPhoneNoInput(true) }} >
+                                    PROCEED
+                                </Button>
+                            </div>
+                        </form>
+                        : null}
+                    {otpPageVisibility ?
+                        <div className="py-2" id="otpPage">
+                            <h3 className="mb-3 text-xl text-blue-500 ">OTP Code</h3>
+                            <label className="block mb-2 font-medium text-gray-900 sm:text-base text-xs">Please check your {signInUsing.type} and enter the OTP code  <span className="text-red-500">*</span></label>
 
                             <form className="space-y-6" action="#" >
-                                <OtpField
+
+                                <OtpInput
                                     value={state}
                                     onChange={handleChange}
+                                    containerStyle={{ display: "flex", justifyContent: "space-between", width: "80%", marginLeft: "auto", marginRight: "auto" }}
                                     numInputs={4}
-                                    classNames={"flex justify-center "}
-                                    inputProps={{ className: 'sm:!w-[90px] w-[60px]  mr-5 text-3xl text-center font-bold h-[60px] border-blue-400 focus:ring-0 border-b-4 border-t-0 border-x-0 bg-transparent' }}
+                                    inputStyle={{ width: "100%", fontSize: "1.5rem", paddingTop: "0.5rem", paddingBottom: "0.5rem" }}
+                                    renderSeparator={<span className="w-[7rem] "> </span>}
+                                    renderInput={(props: any) => <Input  {...props} className="h-14" />}
                                 />
-
-                                <div className="mx-3">
-                                    {countDownVisible ? <div className="text-sm  text-gray-500 flex justify-between" id="seconds-count">
-                                        <p>Didn't Receive Code?</p> <div className="">Request again in {time >= 0 ? time : stopTimer()} seconds</div>
-                                    </div> : <button onClick={() => { isValidPhoneNoInput(true) }} type="button" className="bg-white hover:bg-blue-600 px-3 py-2 rounded-lg border text-blue-500 border-blue-500  hover:text-white text-xs tracking-widest" >RESEND OTP</button>
+                                <div className="sm:text-sm text-[10px]">
+                                    {countDownVisible ? <div className=" text-gray-500 flex justify-between" id="seconds-count">
+                                        <p>Didn't Receive Code?</p> <p className="">Request again in {time >= 0 ? time : stopTimer()} seconds</p>
+                                    </div> : <Button variant={"outline"} onClick={() => { isValidPhoneNoInput(true) }} type="button" size={"sm"} >RESEND OTP</Button>
                                     }
                                 </div>
                                 <div className="flex space-x-3">
-                                    <button onClick={() => { isValidPhoneNoInput(false) }} className="bg-white border border-gray-600  justify-center w-1/2 flex items-center focus:bg-black active:text-white focus:text-white hover:bg-gray-700  hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-3 h-3">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                                        </svg>
-                                        <span className="ml-4">Back</span>
-                                    </button>
-                                    <button type="button" onClick={(e) => {
+                                    <Button onClick={() => { isValidPhoneNoInput(false) }} variant={"outline"} className="w-1/3">
+                                        Back
+                                    </Button>
+                                    <Button onClick={(e) => {
                                         e.preventDefault()
                                         otpIsValid(state)
-                                    }} disabled={state.length === 4 ? false : true} className={" disabled:bg-blue-300 bg-blue-500  items-center flex justify-center w-full focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "}>
-                                        <span className="mr-4 text-white ">PROCEED</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-3 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                                        </svg>
-                                    </button>
+                                    }} className="w-full" disabled={state.length === 4 ? false : true}>
+                                        PROCEED
+                                    </Button>
                                 </div>
                             </form>
                         </div> : null}
-                </Dialog.Panel>
-            </ModalContainer>
+                </div>
+            </motion.div>
+
+
+            <motion.div
+                animate={countriesDrawerState ? "open" : "closed"}
+                //@ts-ignore
+                variants={variants} className="z-50 bg-white  max-w-xl mx-auto py-3 md:rounded-xl rounded-xl rounded-b-none px-3">
+                <div className="pb-2">
+                    <h3 className="text-xl">Select a Country</h3>
+                </div>
+                <Command className="rounded-lg border shadow-md ">
+                    <CommandInput placeholder="Search for Countries..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup >
+                            {selectedCountryData ?
+                                <CommandItem>
+                                    <button className="space-x-3 items-center bg-green-100 flex justify-between  px-2 pr-5 py-1.5 w-full" onClick={() => { setCountriesDrawerState(false) }}>
+                                        <div className="flex space-x-3 items-center">
+                                            <Image src={`https://hatscripts.github.io/circle-flags/flags/${selectedCountryData[0].alpha2Code.toLowerCase()}.svg`} width="50" height="50" className="w-8 h-8" alt={selectedCountryData[0].name} />
+                                            <p className="sm:text-base text-xs whitespace-nowrap overflow-hidden text-ellipsis">{selectedCountryData[0].name}</p>
+                                            <p className="sm:text-sm text-xs font-semibold">(+{selectedCountryData[0].callingCodes})</p>
+                                        </div>
+                                        <BsPatchCheckFill className="sm:w-6 sm:h-6 h-5 w-5 fill-green-500" />
+                                    </button>
+                                </CommandItem>
+                                : null}
+                            {countriesData ?
+                                countriesData.map((countr: any) => (
+                                    <CommandItem className={` ${selectedCountryData && selectedCountryData[0].name === countr.name ? "hidden" : ""}`}>
+                                        <button onClick={() => {
+                                            setSelectedCountryData([countr])
+                                            setCountriesDrawerState(false)
+                                        }
+                                        } className="space-x-3 items-center w-full h-full flex px-2 pr-5 py-1.5">
+                                            <Image src={`https://hatscripts.github.io/circle-flags/flags/${countr.alpha2Code.toLowerCase()}.svg`} width="50" height="50" className="w-8 h-8" alt={countr.name} />
+                                            <p className="sm:text-base text-xs overflow-hidden whitespace-nowrap text-ellipsis">{countr.name}</p>
+                                            <p className="sm:text-sm text-xs font-semibold">(+{countr.callingCodes})</p>
+                                        </button>
+                                    </CommandItem>
+                                ))
+                                : null}
+                        </CommandGroup>
+                        <CommandSeparator />
+                    </CommandList>
+                </Command>
+
+            </motion.div>
         </>
     )
 
