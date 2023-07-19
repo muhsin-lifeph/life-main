@@ -50,7 +50,7 @@ const NavbarBottom = ({ locationOnClickHandle, AddressDataIndex }: { locationOnC
       </div>
       <div className="sm:visible md:hidden ">
         <div className="flex  bg-life text-white text-xs px-[10px] py-1 justify-between items-center">
-          <div className="overflow-hidden whitespace-nowrap text-ellipsis">{t.navbar.deliver_to}:   Business Bay, Dubai  </div>
+          <div>{t.navbar.deliver_to}:   <span className="mx-2">Business Bay, Dubai</span>  </div>
           <button className="bg-white rounded text-pink-700 w-20 py-1" onClick={() => { locationOnClickHandle() }}>CHANGE</button>
         </div>
       </div>

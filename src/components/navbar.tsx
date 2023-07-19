@@ -5,12 +5,8 @@ import 'react-phone-number-input/style.css';
 import { useSession } from "next-auth/react";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { useRouter } from "next/router";
-import LanguageChangeModal from "./language-change-modal";
 import React, { FC } from 'react'
-import LocationModal from "./location-modal";
-import AuthModal from "./authorixzation-modal";
-import InvalidOTPModal from "./invalid-otp-modal";
-import AddressModal from "./address-modal";
+
 import { SmSearchBoxModal } from "./sm-searchbox-modal";
 import SmMenu from "./sm-menu";
 import { useLanguage } from "@/hooks/useLanguage";
@@ -19,11 +15,27 @@ import SmNavbarTop from "./sm-navbar-top";
 import getSearchDataSuggestions from "@/lib/getSearchData";
 import NavbarBottom from "./lg-navbar-top";
 import dynamic from 'next/dynamic'
-import ExampleSheet from "./sheet";
 
 const LgNavbarMenu = dynamic(() => import('./lg-navbar-menu'), {
   ssr: false,
 })
+
+const LanguageChangeModal = dynamic(() => import('./language-change-modal'), {
+  ssr: false,
+})
+const LocationModal = dynamic(() => import('./location-modal'), {
+  ssr: false,
+})
+const AuthModal = dynamic(() => import('./authorixzation-modal'), {
+  ssr: false,
+})
+const InvalidOTPModal = dynamic(() => import('./invalid-otp-modal'), {
+  ssr: false,
+})
+const AddressModal = dynamic(() => import('./address-modal'), {
+  ssr: false,
+})
+
 interface navbarProps {
   data: any,
   brands_data: any,
@@ -75,6 +87,8 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
     ]
   })
+  const [isSheetOpen, setSheetOpen] = useState(false);
+
 
   //default-address
   const [formData, setFormData] = useState({
@@ -225,7 +239,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const setModalState = (modalState: any) => {
     setLanguageModal(modalState)
   }
-    const [isSheetOpen, setSheetOpen] = useState(false);
 
   const parts = locale ? locale?.split("-") : ["ae", "en"]
 
@@ -236,7 +249,7 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
       <div className="sticky top-0 z-50 bg-white mx-auto">
         <SmNavbarTop />
         <div className="md:bg-[#002579] bg-white  backdrop-blur backdrop-filter ">
-          <LgNavbar setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen} searchData={searchData} SearchLoadingState={SearchLoadingState} queryData={queryData} isArabic={isArabic} searchSuggestions={searchSuggestions} searchButtonOnMouseEnter={searchButtonOnMouseEnter} setLanguageModal={setLanguageModal} setLocationModal={setLocationModal} searchButtonOnClick={searchButtonOnClick}>
+          <LgNavbar setSheetOpen={setSheetOpen} searchData={searchData} SearchLoadingState={SearchLoadingState} queryData={queryData} isArabic={isArabic} searchSuggestions={searchSuggestions} searchButtonOnMouseEnter={searchButtonOnMouseEnter} setLanguageModal={setLanguageModal} setLocationModal={setLocationModal} searchButtonOnClick={searchButtonOnClick}>
             <input type="button" onClick={() => {
               setSmScreenSearchBox(true)
             }} className={`cursor-pointer md:hidden block bg-gray-50 border border-slate-300 text-[#9ba0b1] text-sm rounded-lg focus:ring-0 w-full ${isArabic ? "text-right pr-12" : "pl-10 text-left"}  p-3  rounded-full`}
@@ -249,9 +262,9 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
       </div>
 
       {/* modals */}
-      <LocationModal showModal={isOpen} setCloseModal={setIsOpen} setLocationModal={setLocationModal}  />
+      <LocationModal showModal={isOpen} setCloseModal={setIsOpen} setLocationModal={setLocationModal} />
 
-      <AuthModal  setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen}  setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} />
+      <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} />
 
       <InvalidOTPModal showModal={notValidOTPPageVisib} setCloseModal={setnotValidOTPPageVisib} />
 
@@ -264,16 +277,17 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
       <SmSearchBoxModal showModal={smScreenSearchBox} setCloseModal={setSmScreenSearchBox} isArabic={isArabic} queryData={queryData} setQueryData={setQueryData} searchButtonOnMouseEnter={searchButtonOnMouseEnter} SearchLoadingState={SearchLoadingState} searchData={searchData} searchBoxClear={searchBoxClear} searchSuggestions={searchSuggestions} searchClosebtn={searchClosebtn} />
 
-      <SmMenu searchButtonOnClick={searchButtonOnClick} setSmScreenSearchBox={setSmScreenSearchBox} />
+      <SmMenu searchButtonOnClick={searchButtonOnClick} setSmScreenSearchBox={setSmScreenSearchBox} isSheetOpen={isSheetOpen} setSheetOpen={setSheetOpen}/>
 
       {
         overlayVisible ? <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm z-10" />
           : null
       }
 
-      <button className="fixed bottom-7 right-7 z-50 bg-[#2000F0] text-white p-3 rounded-full">
+      <button className="fixed bottom-7 right-7 z-50 bg-[#2000F0] text-white p-3 rounded-full sm:block hidden">
         <svg color="inherit" viewBox="0 0 32 32" className="w-8 h-8"><path fill="#FFFFFF" d="M12.63,26.46H8.83a6.61,6.61,0,0,1-6.65-6.07,89.05,89.05,0,0,1,0-11.2A6.5,6.5,0,0,1,8.23,3.25a121.62,121.62,0,0,1,15.51,0A6.51,6.51,0,0,1,29.8,9.19a77.53,77.53,0,0,1,0,11.2,6.61,6.61,0,0,1-6.66,6.07H19.48L12.63,31V26.46"></path><path fill="#2000F0" d="M19.57,21.68h3.67a2.08,2.08,0,0,0,2.11-1.81,89.86,89.86,0,0,0,0-10.38,1.9,1.9,0,0,0-1.84-1.74,113.15,113.15,0,0,0-15,0A1.9,1.9,0,0,0,6.71,9.49a74.92,74.92,0,0,0-.06,10.38,2,2,0,0,0,2.1,1.81h3.81V26.5Z" className="w-10 h-10"></path></svg>
       </button>
+
 
     </>
   );

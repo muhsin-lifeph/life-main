@@ -14,9 +14,9 @@ const SmNavbarTop = () => {
                             stroke="currentColor" className=" sm:w-5 sm:h-7 w-4 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        <div className="my-auto sm:text-sm text-xs overflow-hidden whitespace-nowrap text-ellipsis  mx-2">{t.navbar.highest_rated_phar}</div>
+                        <div className="my-auto sm:text-sm text-xs   mx-2">{t.navbar.highest_rated_phar}</div>
                     </div>
-                    <div className="text-end sm:text-sm text-[10px] my-auto overflow-hidden whitespace-nowrap text-ellipsis">{t.navbar.download_now}</div>
+                    <div className="text-end sm:text-sm text-[10px] my-auto ">{t.navbar.download_now}</div>
                 </div>
             </TransitionComp>
             : null
