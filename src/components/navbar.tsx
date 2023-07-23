@@ -49,6 +49,8 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
   //-----------------------------hooks-------------------------------------
   const { data: session } = useSession()
+  console.log(session);
+  
   const { locale } = useLanguage()
   const [signInUsing, signInSet] = useState("");
   const [isPhoneNumberValid, setPhoneNumberValidState] = useState(false);

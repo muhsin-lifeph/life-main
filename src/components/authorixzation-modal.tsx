@@ -48,7 +48,7 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
 
 
     async function otpIsValid(otpValue: string) {
-        debugger
+        
         if (signInUsing.type === "Phone") {
             await signIn('credentials', { phone: phoneNumberforOTP, code: otpValue, isPhone: "true", redirect: false })
                 .then(async (res) => {
@@ -67,7 +67,7 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
         else {
             await signIn('credentials', { email: phoneNumberforOTP, code: otpValue, isPhone: "false", redirect: false })
                 .then(async (res) => {
-                    debugger
+                    
                     if (res?.ok) {
                         setaddNewAddress(true);
                         setaddnewAddressFormVisibility(false)
@@ -85,7 +85,6 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
 
 
     function sendOTPtoPhoneNo(pHNumber: string, type: string) {
-        debugger
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         var raw
@@ -141,7 +140,7 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
     const [phoneNumberValidTimeout, setPhoneNumberValidTimeout] = useState<any>(null)
 
     function isValidCredentials(value: string) {
-        debugger
+        
         setPhoneNumberValidState("loading")
         clearTimeout(phoneNumberValidTimeout)
         const timeout = setTimeout(() => {
@@ -212,7 +211,7 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
         fetch("https://restcountries.com/v2/region/Asia?fields=name,alpha2Code,callingCodes").then(res => res.json()).then(countriesData => {
             setCountriesData(countriesData)
             fetch("https://ipapi.co/json").then(res => res.json()).then((data: any) => {
-                debugger
+                
                 const selectedCountriesDatas = countriesData.filter((countryData: any) => countryData.name === data.country_name)
                 setSelectedCountryData(selectedCountriesDatas)
             }

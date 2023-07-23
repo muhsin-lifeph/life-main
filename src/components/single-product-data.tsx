@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Link from 'next/dist/client/link'
-import Image from 'next/dist/client/image'
+import Image from 'next/image'
 import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 import { addToCart, decrementQuantity } from '../redux/cart.slice';
@@ -11,18 +11,24 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Skeleton } from './ui/skeleton';
+import { BsPlus, BsTrash } from 'react-icons/bs';
+import { Button } from './ui/button';
+
+import { SlRefresh } from 'react-icons/sl';
+
 export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRowView: boolean }) => {
     const { pathname } = useRouter()
     const cartItems = useSelector((state: RootState) => state.cart);
     const dispatch = useDispatch();
-    const { locale, currency } = useLanguage();
-    const parts = locale?.split("-")
+    const { currency } = useLanguage();
     const [addedToCartClicked, addedToCartState] = useState(false)
     const [isValidImage, setIsValidImage] = useState(true);
+    const [cartItemsAddTimeoutState, setCartItemsAddTimeout] = useState<any>(null)
+    const [loadingState, setLoadingState] = useState<boolean>(false)
 
     const getProductQuantity = (productId: any) => {
-        const productItem = cartItems.find((item: any) => item.id === productId);
-        return productItem ? productItem.quantity : 0;
+        const productItem = cartItems.data.items.find((item: any) => item.id === productId);
+        return productItem ? productItem.qty : 0;
     };
 
     function reviewColor(rating: number) {
@@ -33,12 +39,24 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
             return "orange"
         }
     }
+
     function generateIcon(type: string) {
         return <Image src={`https://www.lifepharmacy.com/images/label/${type}.svg`} height={30} width={30} alt="icon" className='sm:w-4 sm:h-4 h-2 w-2  flex item-center' />
     }
+
     const addedToCart = (pro_data: any) => {
-        dispatch(addToCart(pro_data))
+        setLoadingState(true)
         addedToCartState(true);
+
+        clearTimeout(cartItemsAddTimeoutState)
+
+        const timeout = setTimeout(() => {
+            dispatch(addToCart(pro_data))
+            setLoadingState(false)
+
+        }, 800)
+
+        setCartItemsAddTimeout(timeout)
         toast.success(`Item Added to the cart`);
     }
 
@@ -46,20 +64,34 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
         setIsValidImage(false);
     };
 
-
+    const updateCartQuantity = (isIncrement: boolean) => {
+        if (isIncrement) {
+            dispatch(incrementQuantity(pro_data.id))
+        }
+        else {
+            dispatch(decrementQuantity(pro_data.id))
+        }
+        toast.info(`Cart successfully updated`);
+    }
 
     return (
         <>
 
             {pro_data && !isRowView ?
-                <div className="relative border border-muted rounded-lg bg-white  max-w-[250px]" >
-                    <figure className='border border-muted m-2 rounded-lg relative '>
-                        <Link href={`/product/${pro_data.slug}`} className="   block bg-white  rounded-lg rounded-b-none  relative">
+                <div className="border border-muted rounded-lg bg-white max-w-[250px]" >
+                    <figure className='border border-muted m-2 rounded-lg relative'>
+                        <Link href={`/product/${pro_data.slug}`} className="block bg-white  rounded-lg rounded-b-none">
 
                             {isValidImage ?
                                 <Image onError={handleImageError} className={`rounded-lg  object-cover h-full w-full max-h-[200px]`} src={pro_data.images?.featured_image} width={200} height={200} alt="product_img" />
                                 :
                                 <Skeleton className="h-[200px] w-full" />
+                            }
+                            {loadingState ?
+                                <div className="bg-white/50 absolute inset-0 flex justify-center items-center">
+                                    <Image height={70} width={70} src={"/images/bSFyVv5IQA.gif"} className='text-life rounded-full object-cover' alt='loading' />
+                                </div>
+                                : null
                             }
                             <span className="flex absolute bg-amber-400 opacity-90 rounded-bl-lg px-[7px] py-[1px] bottom-0 left-0 rounded-tr-xl shadow-xl ">
                                 <div className="my-auto">
@@ -76,8 +108,8 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                                         <>{parseFloat(pro_data.offers.value).toFixed(0)} % OFF</>
                                         : <>BUY1 GET1</>}</div> : null}
                         </Link>
-                        {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`skeleton-box ribbon-2 flex items-center text-white `}><span className='items-center'>{pro_data.label.label_text}</span>
-                                <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
+                        {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`skeleton-box ribbon-2 text-sm flex items-center text-white `}><span className='items-center'>{pro_data.label.label_text}</span>
+                            <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
 
                     </figure>
 
@@ -112,27 +144,45 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                                     <Image className="my-auto" data-v-11f2193b="" src="https://www.lifepharmacy.com/images/standard-nr.svg" alt="delivery-img" width={20} height={20} />
                                     <span className="lg:text-xs my-auto lg:ml-3 ml-1 text-[10px]">12 - 24 HRS</span>
                                 </div>
-                                {addedToCartClicked && getProductQuantity(pro_data.id) > 0 ?
-                                    <div className="flex ">
-                                        <button onClick={() => {
-                                            dispatch(decrementQuantity(pro_data.id))
-                                            toast.info(`Cart successfully updated`);
-                                        }} className='bg-white border-gray-200 border px-1'>
-                                            <Image src={"https://www.lifepharmacy.com/images/trash.svg"} height={15} width={15} alt="trash" />
+                                {addedToCartClicked ?
+                                    // <div className="grid grid-cols-3 items-center ">
+                                    //     <button onClick={() => {
+                                    //         dispatch(decrementQuantity(pro_data.id))
+                                    //         toast.info(`Cart successfully updated`);
+                                    //     }} className='bg-white border-gray-200 border flex justify-center p-0.5 rounded-sm'>
+                                    //         <Image src={"https://www.lifepharmacy.com/images/trash.svg"} height={17} width={17} alt="trash"/>
+                                    //     </button>
+                                    //     <div className=' text-sm px-2 text-center '>{getProductQuantity(pro_data.id)}</div>
+                                    //     <button onClick={() => {
+                                    //         dispatch(incrementQuantity(pro_data.id))
+                                    //         toast.info(`Cart successfully updated`);
+                                    //     }} className='bg-[#39f] p-1 h-full rounded-sm'>
+                                    //         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-[17px] h-4 ">
+                                    //             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    //         </svg>
+                                    //     </button>
+                                    // </div>
+
+                                    <div className='flex items-center'>
+                                        <Button
+                                            onClick={() => updateCartQuantity(false)}
+                                            variant={'outline'} className='border border-slate-100 !rounded text-slate-600 !px-1 h-fit'>
+                                            <BsTrash className='w-4 h-4' />
+                                        </Button>
+                                        <button className='px-3'>
+                                            {!loadingState ?
+                                                <span className='text-sm'>{getProductQuantity(pro_data.id)}</span>
+                                                : <SlRefresh className='text-primary animate-spin' />
+                                            }
                                         </button>
-                                        <div className='bg-slate-50 text-sm px-2 text-center '><span className='align-middle'>{getProductQuantity(pro_data.id)}</span></div>
-                                        <button onClick={() => {
-                                            dispatch(incrementQuantity(pro_data.id))
-                                            toast.info(`Cart successfully updated`);
-                                        }} className='bg-[#39f] px-1 '>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-5 h-4">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                            </svg>
-                                        </button>
+                                        <Button onClick={() => updateCartQuantity(true)}
+                                            className='bg-primary text-white rounded-sm !px-1.5 h-fit'>
+                                            <BsPlus className='w-4 h-4' />
+                                        </Button>
                                     </div>
                                     : <button onClick={() => {
                                         addedToCart(pro_data)
-                                    }} className="bg-[#39f] text-white px-2 flex  justify-center  lg:py-1 py-1 rounded">
+                                    }} className="bg-[#39f] text-white px-2 flex  justify-center  lg:py-1 py-1 rounded ">
                                         <svg className="w-5 h-5 my-auto fill-white mr-2" fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 4 7 C 3.449219 7 3 7.449219 3 8 C 3 8.550781 3.449219 9 4 9 L 6.21875 9 L 8.84375 19.5 C 9.066406 20.390625 9.863281 21 10.78125 21 L 23.25 21 C 24.152344 21 24.917969 20.402344 25.15625 19.53125 L 27.75 10 L 25.65625 10 L 23.25 19 L 10.78125 19 L 8.15625 8.5 C 7.933594 7.609375 7.136719 7 6.21875 7 Z M 22 21 C 20.355469 21 19 22.355469 19 24 C 19 25.644531 20.355469 27 22 27 C 23.644531 27 25 25.644531 25 24 C 25 22.355469 23.644531 21 22 21 Z M 13 21 C 11.355469 21 10 22.355469 10 24 C 10 25.644531 11.355469 27 13 27 C 14.644531 27 16 25.644531 16 24 C 16 22.355469 14.644531 21 13 21 Z M 16 7 L 16 10 L 13 10 L 13 12 L 16 12 L 16 15 L 18 15 L 18 12 L 21 12 L 21 10 L 18 10 L 18 7 Z M 13 23 C 13.5625 23 14 23.4375 14 24 C 14 24.5625 13.5625 25 13 25 C 12.4375 25 12 24.5625 12 24 C 12 23.4375 12.4375 23 13 23 Z M 22 23 C 22.5625 23 23 23.4375 23 24 C 23 24.5625 22.5625 25 22 25 C 21.4375 25 21 24.5625 21 24 C 21 23.4375 21.4375 23 22 23 Z"></path></g></svg>
                                         <span className="my-auto text-xs ">ADD</span>
                                     </button>}
@@ -142,7 +192,7 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                 </div>
                 : null}
             {pro_data && isRowView ?
-                <Link href={`/product/${pro_data.slug}`}  className="rounded-lg border border-slate-200 my-1 relative bg-white shadow-sm">
+                <Link href={`/product/${pro_data.slug}`} className="rounded-lg border border-slate-200 my-1 relative bg-white shadow-sm">
                     <div className="grid grid-cols-12 p-3 gap-x-3">
                         <div className=" relative md:col-span-2 col-span-4 h-fit my-auto">
                             <Image src={pro_data.images.featured_image} height={150} width={150} className=" border border-slate-200 rounded-lg w-full my-auto" alt="pro_Image" />
@@ -182,7 +232,7 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                     </div>
 
                     {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`skeleton-box ribbon-2 flex items-center text-white `}><span className='items-center'>{pro_data.label.label_text}</span>
-                                <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
+                        <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
                     <div className="absolute bottom-2 right-2 flex h-7 ">
                         {addedToCartClicked && getProductQuantity(pro_data.id) > 0 ?
                             <>
