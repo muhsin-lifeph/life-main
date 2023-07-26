@@ -1,7 +1,9 @@
 import { DeliverInstructionsBtn } from "@/components/Button";
+import AuthModal from "@/components/authorixzation-modal";
 import { PaymentMethodModal } from "@/components/location-modal";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { setModalVisibility } from "@/hooks/useOutsideClick";
 import { RootState } from "@/redux/store";
 import { ChevronDown, InfoIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -25,6 +27,23 @@ export default function Checkout({ }) {
     const cartItemsData = cartItems.cart.cart_data ? cartItems.cart.cart_data.items : []
     const shipmentData = cartItems.cart.shipment_data ? cartItems.cart.shipment_data[0] : []
     const cartSummery = cartItems.cart.cart_summary
+
+    const {
+        locationModalState,
+        setLocationModalState,
+        setSheetOpen,
+        setaddNewAddress,
+        setaddnewAddressFormVisibility,
+        setnotValidOTPPageVisib,
+        isSheetOpen,
+        locationModal,
+        setLocationModal,
+        notValidOTPPageVisib,
+        setAddressDataIndex,
+        AddressDataIndex,
+        addNewAddress,
+        availableAddresses,
+        setavailableAddresses } = setModalVisibility();
     return (
         domLoaded ?
             <div className="grid grid-cols-12 gap-x-3 px-[10px] py-5 max-w-[1440px] mx-auto">
@@ -215,7 +234,9 @@ export default function Checkout({ }) {
                     </div>
 
                 </div>
-
+                
+                {!session ?
+                    <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={true} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} /> : null}
                 <PaymentMethodModal newCardSelected={newCardSelected} setNewCardSelectedState={setNewCardSelectedState} showModal={paymentMethodModalState} setCloseModal={setPaymentMethodModalState} />
             </div>
             : <></>
