@@ -252,7 +252,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const setModalState = (modalState: any) => {
     setLanguageModal(modalState)
   }
-  console.log(AddressDataIndex);
 
   const parts = locale ? locale?.split("-") : ["ae", "en"]
   return (

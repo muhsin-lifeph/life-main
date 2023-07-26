@@ -11,7 +11,6 @@ import BreadCrumb from "@/components/breadcrumb"
 import { useRouter } from "next/router"
 
 export default function ({ DoctorsListData, SpecialityQuery }: { DoctorsListData: any, SpecialityQuery: any }) {
-    console.log(DoctorsListData);
 
     const [doctorsData, setDoctorsData] = useState(DoctorsListData.data.doctors)
     const [noOfDoctors, setnoOfDoctors] = useState(10)

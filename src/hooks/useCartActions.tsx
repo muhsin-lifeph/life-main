@@ -21,7 +21,6 @@ export function useCartActions() {
         else {
             createCartPOSTReq(payloadData).then((res) => {
                 debugger
-                console.log(res);
 
                 dispatch(updateCartData(res));
 
@@ -36,7 +35,6 @@ export function useCartActions() {
         debugger
         updateCartApiReq(payloadData, cartId).then((res) => {
             debugger
-            console.log(res);
 
             dispatch(updateCartData(res));
 

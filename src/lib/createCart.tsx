@@ -7,7 +7,6 @@ export default async function createCartPOSTReq(payLoadData: string) {
 
     var raw = JSON.stringify(payLoadData);
 
-    console.log(raw);
     
     var requestOptions: RequestInit = {
         method: 'POST',

@@ -31,6 +31,7 @@ export const Layout: FC<layoutProps> = ({ children, data, brands_data, isArabic,
         draggable
         pauseOnHover={false}
         theme="colored"
+        className={"rounded-xl"}
       />
       <section className="py-0" >
         <Navbar data={data} brands_data={brands_data} isArabic={isArabic} lang={lang}  />

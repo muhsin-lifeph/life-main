@@ -18,7 +18,7 @@ const modalVariants = cva(
             size: {
                 default: "sm:max-w-md w-full p-3",
                 sm: "sm:max-w-sm w-full p-3",
-                lg: "sm:max-w-xl w-full p-5",
+                lg: "sm:max-w-xl w-full sm:p-5 p-3",
                 full: "w-full"
             },
         },

@@ -6,7 +6,6 @@ export default async function updateCartApiReq(payLoadData: any, cartId: number)
 
     var raw = JSON.stringify(payLoadData);
 
-    console.log(raw);
 
     var requestOptions: RequestInit = {
         method: 'POST',
