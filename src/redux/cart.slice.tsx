@@ -1,14 +1,15 @@
 import createCartPOSTReq from '@/lib/createCart';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
+import updateCartApiReq from '@/lib/updateCart';
+import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
+import { produce } from "immer"
 interface CartItem {
     id: string;
     qty: number;
     // Add other properties of the item
 }
-const storedCart = typeof window !== "undefined" ? window.localStorage.getItem('cart') : false
+const storedCart = typeof window !== "undefined" ? window.localStorage.getItem('life-store') : false
 
-const initialCartState = {
+var initialCartState: any = {
     data: {
         items: [
             // {
@@ -20,59 +21,34 @@ const initialCartState = {
     }
 }
 
-const createCart = (payloadData: any) => {
-    debugger
-    createCartPOSTReq(payloadData).then(res => {
-        debugger
-        console.log(res);
-        localStorage.setItem('life-store', JSON.stringify({ cart: res.data }))
-    })
-}
 
+const init = {
+    cart: {
+        // cart_data: {
+
+        //     items: [
+        //         // {
+        //         //     offer_id: null,
+        //         //     type: "simple",
+        //         //     offer_data: null,
+        //         //     items: [
+        //         //     ]
+        //         // }
+        //     ]
+        // }
+    }
+}
 const cartSlice = createSlice({
-    name: 'cart',
-    initialState: storedCart ? JSON.parse(storedCart) : initialCartState,
+    name: 'life-store',
+    initialState: storedCart ? JSON.parse(storedCart) : init,
     reducers: {
-        addToCart: (state: any, action: PayloadAction<CartItem>) => {
-            if (state.data.items.length === 0) {
-                state.data.items.push({ id: action.payload.id, qty: 1 });
-                createCart({ data: state.data })
-            }
-            else {
-                const itemExists = state.data?.items.find((item: any) => item.id === action.payload.id);
-                if (itemExists) {
-                    itemExists.quantity++;
-                } else {
-                    state.data.items.push({ id: action.payload.id, qty: 1 });
-                }
-                localStorage.setItem('cart', JSON.stringify(state));
-            }
-        },
-        incrementQuantity: (state, action: PayloadAction<string>) => {            
-            const item = state.data.items?.find((item: any) => item.id === action.payload);
-            if (item) {
-                item.quantity++;
-            }
-            localStorage.setItem('cart', JSON.stringify(state));
-        },
-        decrementQuantity: (state, action: PayloadAction<string>) => {
-            const item = state.data.items?.find((item: any) => item.id === action.payload);
-            if (item) {
-                if (item.qty === 1) {
-                    const index = state.data?.items.findIndex((item: any) => item.id === action.payload);
-                    state.splice(index, 1);
-                } else {
-                    item.quantity--;
-                }
-            }
-            localStorage.setItem('cart', JSON.stringify(state));
-        },
-        removeFromCart: (state, action: PayloadAction<string>) => {
-            const index = state.findIndex((item: any) => item.id === action.payload);
-            if (index !== -1) {
-                state.splice(index, 1);
-            }
-            localStorage.setItem('cart', JSON.stringify(state));
+
+        updateCartData: (state, action: PayloadAction<any>) => {
+            debugger
+
+            state.cart = action.payload.data
+            localStorage.setItem('life-store', JSON.stringify(state));
+
         },
     },
 });
@@ -80,8 +56,6 @@ const cartSlice = createSlice({
 export const cartReducer = cartSlice.reducer;
 
 export const {
-    addToCart,
-    incrementQuantity,
-    decrementQuantity,
-    removeFromCart,
+
+    updateCartData
 } = cartSlice.actions;

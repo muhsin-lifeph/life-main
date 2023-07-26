@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
 
@@ -20,6 +21,17 @@ export const ShopNowButton = ({ classNames, children, onClick }: { children: any
     return (
         <button className={"btn-primary sm:text-base text-sm sm:py-3 py-2 sm:px-7 px-5 " + classNames} onClick={onClick}>
             {children}
+        </button>
+    )
+}
+
+export const DeliverInstructionsBtn = ({ instr }: { instr: any }) => {
+
+    const [instrSelected, setInstrSelected] = useState(false)
+    return (
+        <button onClick={() => setInstrSelected(!instrSelected)} className={`border  p-2 rounded-lg ${instrSelected?" bg-blue-200":"border-muted"}`}>
+            <Image src={instrSelected ?  instr.icon_selected : instr.icon_unselected } height={50} width={50} alt="del-ins" className="mx-auto" />
+            <p className="text-xs text-center">{instr.instruction}</p>
         </button>
     )
 }

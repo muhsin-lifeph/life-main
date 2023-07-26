@@ -5,6 +5,7 @@ import { CheckCircleIcon, CheckIcon, ChevronLeftIcon, ChevronUpDownIcon } from '
 import TransitionComp from './ui/transition'
 import { useRouter } from 'next/router'
 import { toast } from 'react-toastify';
+import ModalContainer from './ui/modal-container'
 
 interface compProps {
     setModalState: any
@@ -130,7 +131,7 @@ relative flex cursor-pointer rounded-lg px-5 md:py-4 py-2 shadow-md focus:outlin
     return (
         <>
 
-            <Transition appear show={modalState} as={Fragment}>
+            {/* <Transition appear show={modalState} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={closeModal}>
                     <Transition.Child
                         as={Fragment}
@@ -155,39 +156,44 @@ relative flex cursor-pointer rounded-lg px-5 md:py-4 py-2 shadow-md focus:outlin
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-4 py-3 text-left align-middle shadow-xl transition-all relative sm:text-sm md:text-base text-xs">
-                                    <div className='flex justify-between space-x-3 my-auto items-center pb-3'>
-                                        {!IsCountryChangeClicked ?
-                                            <div onClick={() => { languageBackClicked() }} className='cursor-pointer border-[3px] border-muted rounded-lg p-1 h-fit hover:bg-gray-200'> <ChevronLeftIcon className='w-6 h-5 md:w-7 md:h-7' /></div>
-
-                                            : null}
-                                        <span className="font-bold md:text-lg text-sm ">Select Your Preference</span>
-
-                                        <button className=" bg-transparent  hover:text-gray-900 rounded-lg text-sm  items-center  border-[3px] border-muted  p-1 h-fit hover:bg-gray-200" onClick={() => { closeModal() }}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="md:w-6 md:h-6 h-4 w-4">
-                                                <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-4 py-3 text-left align-middle shadow-xl transition-all relative sm:text-sm md:text-base text-xs"> */}
 
 
-                                    {IsCountryChangeClicked ?
-                                        <TransitionComp setTransition={IsCountryChangeClicked}>
-                                            {countryProps}
-                                        </TransitionComp>
-                                        : null}
+            <ModalContainer showModal={modalState} setCloseModal={closeModal}>
+                <div className='flex justify-between space-x-3 my-auto items-center pb-3'>
+                    {!IsCountryChangeClicked ?
+                        <div onClick={() => { languageBackClicked() }} className='cursor-pointer border-[3px] border-muted rounded-lg p-1 h-fit hover:bg-gray-200'> <ChevronLeftIcon className='w-6 h-5 md:w-7 md:h-7' /></div>
 
-                                    {IsLanguageChangeClicked ?
-                                        <TransitionComp setTransition={IsLanguageChangeClicked}>
-                                            {languageProps}
-                                        </TransitionComp>
-                                        : null}
-                                </Dialog.Panel>
+                        : null}
+                    <span className="font-bold md:text-lg text-sm ">Select Your Preference</span>
+
+                    <button className=" bg-transparent  hover:text-gray-900 rounded-lg text-sm  items-center  border-[3px] border-muted  p-1 h-fit hover:bg-gray-200" onClick={() => { closeModal() }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="md:w-6 md:h-6 h-4 w-4">
+                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+
+                {IsCountryChangeClicked ?
+                    <TransitionComp setTransition={IsCountryChangeClicked}>
+                        {countryProps}
+                    </TransitionComp>
+                    : null}
+
+                {IsLanguageChangeClicked ?
+                    <TransitionComp setTransition={IsLanguageChangeClicked}>
+                        {languageProps}
+                    </TransitionComp>
+                    : null}
+            </ModalContainer>
+
+            {/* </Dialog.Panel>
                             </Transition.Child>
                         </div>
                     </div>
                 </Dialog>
-            </Transition>
+            </Transition> */}
         </>
     )
 }

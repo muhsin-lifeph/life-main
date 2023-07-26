@@ -31,8 +31,8 @@ export const SmSearchBoxModal: FC<SmSearchBoxModalProps> = ({ searchClosebtn, sh
         </div>
     )
     return (
-        <ModalContainer showModal={showModal} setCloseModal={setCloseModal}>
-            <Dialog.Panel className="w-full fixed inset-0 transform overflow-hidden bg-white text-left align-middle shadow-xl transition-all">
+        <ModalContainer showModal={showModal} setCloseModal={setCloseModal} size={"full"} fullModal={true} className="!rounded-none">
+     
                 <div className="relative  w-full scale-100 transform opacity-100 transition-all ">
                     <div className="relative bg-white w-full  p-2 px-3">
                         <div className="flex w-full py-2 ">
@@ -126,7 +126,7 @@ export const SmSearchBoxModal: FC<SmSearchBoxModalProps> = ({ searchClosebtn, sh
                         </div>
                     </div>
                 </div>
-            </Dialog.Panel>
+   
         </ModalContainer>
     )
 }

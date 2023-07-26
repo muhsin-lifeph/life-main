@@ -27,7 +27,7 @@ export default NextAuth({
           };
         }
 
-        const url = 'https://prodapp.lifepharmacy.com/api/auth/verify-otp'
+        const url = 'https://devapp.lifepharmacy.com/api/auth/verify-otp'
 
         const res = await fetch(url, {
           method: 'POST',

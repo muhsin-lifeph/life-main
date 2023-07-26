@@ -15,6 +15,7 @@ import SmNavbarTop from "./sm-navbar-top";
 import getSearchDataSuggestions from "@/lib/getSearchData";
 import NavbarBottom from "./lg-navbar-top";
 import dynamic from 'next/dynamic'
+import { setModalVisibility } from "@/hooks/useOutsideClick";
 
 const LgNavbarMenu = dynamic(() => import('./lg-navbar-menu'), {
   ssr: false,
@@ -49,29 +50,40 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
   //-----------------------------hooks-------------------------------------
   const { data: session } = useSession()
-  console.log(session);
-  
+
   const { locale } = useLanguage()
   const [signInUsing, signInSet] = useState("");
   const [isPhoneNumberValid, setPhoneNumberValidState] = useState(false);
   const [showElement, setShowElement] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const [overlayVisible, setOverlay] = useState(false);
   const [searchClosebtn, setVisibility] = useState(false);
-  const [notValidOTPPageVisib, setnotValidOTPPageVisib] = useState(false);
-  const [addNewAddress, setaddNewAddress] = useState(false);
   const [addNewAddressClick, setAddNewAddressClick] = useState(false);
   // const [showNavbarAcc, setShowNavbarAcc] = useState(false);
-  const [addnewAddressFormVisibility, setaddnewAddressFormVisibility] = useState(false);
-  const [availableAddresses, setavailableAddresses] = useState(true);
   const [languageModal, setLanguageModal] = useState(false)
-  const [locationModal, setLocationModal] = useState(false)
   const [smScreenSearchBox, setSmScreenSearchBox] = useState(false)
   const [SearchLoadingState, setSearchLoadingState] = useState(false)
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTimer, setSearchTimer] = useState<any>(null)
   const [queryData, setQueryData] = useState("")
-  const [AddressDataIndex, setAddressDataIndex] = useState(session?.token?.addresses[0]);
+
+  //setModalVisibility
+  const {
+    locationModalState,
+    setLocationModalState,
+    setSheetOpen,
+    setaddNewAddress,
+    setaddnewAddressFormVisibility,
+    setnotValidOTPPageVisib,
+    isSheetOpen,
+    locationModal,
+    setLocationModal,
+    notValidOTPPageVisib,
+    setAddressDataIndex,
+    AddressDataIndex,
+    addNewAddress,
+    availableAddresses,
+    setavailableAddresses } = setModalVisibility();
+
   const [searchData, setData] = useState({
     results: [
       {
@@ -89,7 +101,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
     ]
   })
-  const [isSheetOpen, setSheetOpen] = useState(false);
 
 
   //default-address
@@ -234,16 +245,16 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
       }
     }
     else {
-      setIsOpen(true);
+      setLocationModalState(true);
     }
   }
-  
+
   const setModalState = (modalState: any) => {
     setLanguageModal(modalState)
   }
+  console.log(AddressDataIndex);
 
   const parts = locale ? locale?.split("-") : ["ae", "en"]
-
   return (
 
     <>
@@ -264,7 +275,7 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
       </div>
 
       {/* modals */}
-      <LocationModal showModal={isOpen} setCloseModal={setIsOpen} setLocationModal={setLocationModal} />
+      <LocationModal showModal={locationModalState} setCloseModal={setLocationModalState} />
 
       <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} />
 
@@ -279,7 +290,7 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
       <SmSearchBoxModal showModal={smScreenSearchBox} setCloseModal={setSmScreenSearchBox} isArabic={isArabic} queryData={queryData} setQueryData={setQueryData} searchButtonOnMouseEnter={searchButtonOnMouseEnter} SearchLoadingState={SearchLoadingState} searchData={searchData} searchBoxClear={searchBoxClear} searchSuggestions={searchSuggestions} searchClosebtn={searchClosebtn} />
 
-      <SmMenu searchButtonOnClick={searchButtonOnClick} setSmScreenSearchBox={setSmScreenSearchBox} isSheetOpen={isSheetOpen} setSheetOpen={setSheetOpen}/>
+      <SmMenu searchButtonOnClick={searchButtonOnClick} setSmScreenSearchBox={setSmScreenSearchBox} isSheetOpen={isSheetOpen} setSheetOpen={setSheetOpen} />
 
       {
         overlayVisible ? <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm z-10" />

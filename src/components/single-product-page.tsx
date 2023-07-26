@@ -6,7 +6,6 @@ import { useLanguage } from "@/hooks/useLanguage";
 import AddtoCartMobileview from "./add-cart-mobile-view";
 import { useSession } from "next-auth/react";
 import { useDispatch } from 'react-redux';
-import { addToCart, decrementQuantity, incrementQuantity } from '../redux/cart.slice';
 import { toast } from 'react-toastify';
 import "swiper/css";
 import "swiper/css/pagination";
@@ -24,15 +23,20 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation, Autoplay, Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useCartActions } from "@/hooks/useCartActions";
+import { Button } from "./ui/button";
 
 const SingleProductsContent = ({ pro_data, relatedProductsData }: { pro_data: any, relatedProductsData: any }) => {
+    const cartItems = useSelector((state: RootState) => state.cart);
+
+    const cartItemsData = cartItems.cart.cart_data ? cartItems.cart.cart_data.items : []
 
     const getProductQuantity = (productId: any) => {
-        const productItem = cartItems.find((item: any) => item.id === productId);
-        return productItem ? productItem.quantity : 0;
+        const productItem = cartItemsData?.find((item: any) => item.items[0].id === productId ? item.items[0].qty : null);
+        return productItem ? productItem.items[0].qty : 1;
     };
-    const dispatch = useDispatch();
-    const [cartValue, setCartValue] = useState<number>(1);
+    const { createCart, updateCart } = useCartActions();
+
     const [readMorClick, setReadMoreCLick] = useState(false)
     const [FeaturedImage, setFeaturedImage] = useState("https://www.lifepharmacy.com/images/default-product-image.png")
     const { data: session } = useSession()
@@ -40,34 +44,49 @@ const SingleProductsContent = ({ pro_data, relatedProductsData }: { pro_data: an
     const [wishListItem, setWishlistedItem] = useState(false)
     const { currency } = useLanguage()
     const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
-    const cartItems = useSelector((state: RootState) => state.cart);
+    const [proQty, setProQty] = useState<any>(1)
+    const [cartItemsAddTimeoutState, setCartItemsAddTimeout] = useState<any>(null)
 
     useEffect(() => {
         setDomLoaded(true)
         setFeaturedImage(pro_data.images.featured_image);
 
-        getProductQuantity(pro_data.id) > 1 ?
-            setCartValue(getProductQuantity(pro_data.id))
-            : null
+        setProQty(getProductQuantity(pro_data.id))
+
     }
         , [])
-
-    const incrementCartQuantity = () => {
-        dispatch(incrementQuantity(pro_data.id))
-        setCartValue(value => value + 1)
-        toast.info(`Cart successfully updated`);
+    const cartInit: any = {
+        action: "",
+        data: {
+            items: [
+                // {
+                //     id: "a6c1a3e7-caea-4845-94ca-a49de40f18c0",
+                //     qty: 1
+                // }
+            ],
+            address_id: null
+        }
     }
-
-    const decrementCartQuantity = () => {
-        dispatch(decrementQuantity(pro_data.id))
-        setCartValue(value => value - 1)
-        toast.info(`Cart successfully updated`);
+    const clearCartState = () => {
+        cartInit.data.items = []
+        cartInit.action = ""
     }
 
     const addedToCart = () => {
-        dispatch(addToCart(pro_data))
+        debugger
+        clearTimeout(cartItemsAddTimeoutState)
+
+        const timeout = setTimeout(() => {
+            debugger
+            cartInit.data.items.push({ id: pro_data.id, qty: proQty })
+            createCart(cartInit)
+            clearCartState()
+        }, 800)
+
+        setCartItemsAddTimeout(timeout)
         toast.success(`Item Added to the cart`);
     }
+
 
     function calculateRating(rating: number) {
         const fullStars = Math.round(rating);
@@ -197,20 +216,19 @@ const SingleProductsContent = ({ pro_data, relatedProductsData }: { pro_data: an
                                     </div>
                                     <div className=" justify-center h-fit p-3 bg-gray space-x-2 min-[570px]:flex hidden ">
                                         <div className="flex">
-                                            <button className="border  border-sky-600 text-white px-3 rounded-lg" onClick={() => cartValue > 1 ? decrementCartQuantity() : null}>
+                                            <Button variant={"ghost"} onClick={() => proQty !== 1 ? setProQty((preQty: number) => preQty - 1) : null}>
                                                 <FaMinus className="text-sky-600 h-[10px] " />
-                                            </button>
-                                            <input type="text" value={cartValue} min="1" max="20" className=" rounded rounded-r-none bg-slate-100 w-10 border-none text-center text-sm text-gray-500 " />
-                                            <button onClick={() => incrementCartQuantity()} className="border  bg-sky-500 hover:bg-sky-600 transition-colors duration-300 text-white px-3 rounded-lg ">
+                                            </Button>
+                                            <input type="text" value={proQty} min="1" max="20" className=" rounded rounded-r-none bg-slate-100 w-10 border-none text-center text-sm text-gray-500 " />
+                                            <Button onClick={() => proQty >= 1 ? setProQty((preQty: number) => preQty + 1) : null}>
                                                 <FaPlus className="h-[10px]" />
-                                            </button>
+                                            </Button>
                                         </div>
 
-                                        <button onClick={() => addedToCart()} className="  text-white bg-sky-500 hover:bg-sky-600 transition-colors duration-300 border-0 py-2 px-4 focus:outline-none  rounded w-full lg:text-base md:text-xs text-[10px] whitespace-nowrap">
-                                            <svg className="inline-block w-5 h-5 my-auto fill-white mr-2" fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 4 7 C 3.449219 7 3 7.449219 3 8 C 3 8.550781 3.449219 9 4 9 L 6.21875 9 L 8.84375 19.5 C 9.066406 20.390625 9.863281 21 10.78125 21 L 23.25 21 C 24.152344 21 24.917969 20.402344 25.15625 19.53125 L 27.75 10 L 25.65625 10 L 23.25 19 L 10.78125 19 L 8.15625 8.5 C 7.933594 7.609375 7.136719 7 6.21875 7 Z M 22 21 C 20.355469 21 19 22.355469 19 24 C 19 25.644531 20.355469 27 22 27 C 23.644531 27 25 25.644531 25 24 C 25 22.355469 23.644531 21 22 21 Z M 13 21 C 11.355469 21 10 22.355469 10 24 C 10 25.644531 11.355469 27 13 27 C 14.644531 27 16 25.644531 16 24 C 16 22.355469 14.644531 21 13 21 Z M 16 7 L 16 10 L 13 10 L 13 12 L 16 12 L 16 15 L 18 15 L 18 12 L 21 12 L 21 10 L 18 10 L 18 7 Z M 13 23 C 13.5625 23 14 23.4375 14 24 C 14 24.5625 13.5625 25 13 25 C 12.4375 25 12 24.5625 12 24 C 12 23.4375 12.4375 23 13 23 Z M 22 23 C 22.5625 23 23 23.4375 23 24 C 23 24.5625 22.5625 25 22 25 C 21.4375 25 21 24.5625 21 24 C 21 23.4375 21.4375 23 22 23 Z"></path></g></svg>
+                                        <Button className="w-full" onClick={() => addedToCart()} iconLeft={
+                                            <svg className="inline-block  w-5 h-5 my-auto fill-white" fill="#000000" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M 4 7 C 3.449219 7 3 7.449219 3 8 C 3 8.550781 3.449219 9 4 9 L 6.21875 9 L 8.84375 19.5 C 9.066406 20.390625 9.863281 21 10.78125 21 L 23.25 21 C 24.152344 21 24.917969 20.402344 25.15625 19.53125 L 27.75 10 L 25.65625 10 L 23.25 19 L 10.78125 19 L 8.15625 8.5 C 7.933594 7.609375 7.136719 7 6.21875 7 Z M 22 21 C 20.355469 21 19 22.355469 19 24 C 19 25.644531 20.355469 27 22 27 C 23.644531 27 25 25.644531 25 24 C 25 22.355469 23.644531 21 22 21 Z M 13 21 C 11.355469 21 10 22.355469 10 24 C 10 25.644531 11.355469 27 13 27 C 14.644531 27 16 25.644531 16 24 C 16 22.355469 14.644531 21 13 21 Z M 16 7 L 16 10 L 13 10 L 13 12 L 16 12 L 16 15 L 18 15 L 18 12 L 21 12 L 21 10 L 18 10 L 18 7 Z M 13 23 C 13.5625 23 14 23.4375 14 24 C 14 24.5625 13.5625 25 13 25 C 12.4375 25 12 24.5625 12 24 C 12 23.4375 12.4375 23 13 23 Z M 22 23 C 22.5625 23 23 23.4375 23 24 C 23 24.5625 22.5625 25 22 25 C 21.4375 25 21 24.5625 21 24 C 21 23.4375 21.4375 23 22 23 Z"></path></g></svg>}>
                                             Add to Cart
-                                        </button>
-
+                                        </Button>
                                     </div>
                                     {session?.token.addresses.length > 0 ?
                                         <div className="min-[570px]:hidden block  rounded-lg w-full p-3 space-y-2">

@@ -6,8 +6,9 @@ import Link from "next/link"
 import { useSelector } from 'react-redux';
 import { RootState } from "../redux/store";
 import { CommandDemo } from "./cmd-cart"
+import { Button, buttonVariants } from "./ui/button"
 
-const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal, setLocationModal }: { setSheetOpen:any, countries: any, languages: any, setLanguageModal: any, setLocationModal: any }) => {
+const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal, setLocationModal }: { setSheetOpen: any, countries: any, languages: any, setLanguageModal: any, setLocationModal: any }) => {
 
     const { t, locale } = useLanguage()
     const [domLoaded, setDomLoaded] = useState(false);
@@ -15,6 +16,7 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
     const parts = locale ? locale?.split("-") : ["ae", "en"]
     const { data: session } = useSession()
     const cartItems = useSelector((state: RootState) => state.cart);
+    const cartItemsData = cartItems.cart.shipment_data ? cartItems.cart.shipment_data[0].products : []
 
     const getFlagByLocale = () => {
         if (parts) {
@@ -43,15 +45,6 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
         }
     }
 
-    const calculateTotalCartPrice = (): string => {
-        let totalPrice: number = 0;
-        cartItems.forEach((pro_data: any) => {
-            totalPrice += pro_data.prices[0].price.regular_price * pro_data.quantity;
-        });
-        return parseFloat(totalPrice.toString()).toFixed(2);
-    };
-
-
     useEffect(() => {
         setDomLoaded(true)
     }, [])
@@ -73,7 +66,7 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
                     </svg>
                     <div className="text-[11px] text-center text-white">Account</div>
                 </Link>
-                : <button  className=" flex-col md:hidden lg:flex hidden pl-5" onClick={() => { setSheetOpen(true) }}>
+                : <button className=" flex-col md:hidden lg:flex hidden pl-5" onClick={() => { setSheetOpen(true) }}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                         stroke="currentColor" className=" my-auto text-white w-7 h-7 mx-auto">
                         <path strokeLinecap="round" strokeLinejoin="round"
@@ -92,10 +85,10 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
                 <div className="text-[11px] text-center text-white whitespace-nowrap">{t.navbar.wishlist}</div>
 
             </a>
-            <div className="justify-between flex-col md:hidden lg:flex hidden relative cart group/cart pl-5">
+            <Link href={"/cart"} className="justify-between flex-col md:hidden lg:flex hidden relative cart group/cart pl-5">
                 {domLoaded ?
-                    cartItems && cartItems.length != 0 ?
-                        <div className="absolute inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500  rounded-full -top-2 -right-2 "> {cartItems.length}</div>
+                    cartItemsData && cartItemsData.length != 0 ?
+                        <div className="absolute inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500  rounded-full -top-2 -right-2 "> {cartItemsData.length}</div>
                         : null : null}
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-7 h-7 fill-white" viewBox="0 0 16 16">
@@ -103,27 +96,27 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
                 </svg>
                 <div className="text-[11px] text-center text-white" >{t.navbar.cart}</div>
 
-                {domLoaded && cartItems && cartItems.length > 0 ?
+                {domLoaded && cartItemsData && cartItemsData.length > 0 ?
                     <div className="group-hover/cart:scale-100  scale-0 absolute w-[25rem] top-[3rem] right-0  rounded-lg px-3 py-2  h-fit  shadow-lg z-30">
 
-                        <CommandDemo cartItems={cartItems}>
+                        <CommandDemo cartItems={cartItemsData}>
                             <div className="px-3">
                                 <div className="py-3">
                                     <div className="flex justify-between ">
                                         <div>TOTAL <span className="text-xs">(WITHOUT SHIPPING)</span> </div>
-                                        <div className="">AED {calculateTotalCartPrice()}</div>
+                                        <div className="">AED {cartItems.cart.cart_summary.sub_total}</div>
                                     </div>
                                 </div>
                                 <div className="py-3 flex justify-between text-white space-x-3">
-                                    <a href={`/cart`} className="bg-[#39f] px-3 py-1 w-full text-center" >CART</a>
-                                    <button className="bg-[#39f] px-3 py-1 w-full">CHECK OUT</button>
+                                    <Link href="/cart" className={"rounded-md w-full " + buttonVariants({ variant: 'default' })}>CART</Link>
+                                    <Link href="/checkout" className={"rounded-md w-full " + buttonVariants({ variant: 'outline' })}>CHECK OUT</Link>
                                 </div>
                             </div>
                         </CommandDemo>
 
                     </div>
                     : null}
-            </div>
+            </Link>
         </div>
     )
 }

@@ -17,7 +17,7 @@ const SearchBoxSuggMenuMC = ({ placeholderData }: { placeholderData: any }) => {
     const [searchTimer, setSearchTimer] = useState<any>(null)
 
     const fetchSearchData = (term: string) => {
-        const api = `https://prodapp.lifepharmacy.com/api/clinics/v1/suggestions?term=${term}&lang=ae-en`
+        const api = `https://devapp.lifepharmacy.com/api/clinics/v1/suggestions?term=${term}&lang=ae-en`
         fetch(api).then(
             res => res.json()).then(
                 data => setSearchData(data))
