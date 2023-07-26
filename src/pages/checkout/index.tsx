@@ -235,7 +235,7 @@ export default function Checkout({ }) {
 
                 </div>
                 
-                {!session ?
+                {session ?
                     <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={true} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} /> : null}
                 <PaymentMethodModal newCardSelected={newCardSelected} setNewCardSelectedState={setNewCardSelectedState} showModal={paymentMethodModalState} setCloseModal={setPaymentMethodModalState} />
             </div>

@@ -219,22 +219,6 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
     const [countriesDrawerState, setCountriesDrawerState] = useState(false)
     const { width } = useWindowDimensions()
 
-    const variants = {
-        closed: {
-            bottom: "-50%",
-            opacity: 0,
-            position: "fixed",
-            left: 0,
-            right: 0,
-        },
-        open: {
-            bottom: width > 576 ? "30%" : 0,
-            opacity: 1,
-            position: "fixed",
-            left: 0,
-            right: 0,
-        },
-    };
 
 
     return (
@@ -267,9 +251,9 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
                                                 <button onClick={(e) => {
                                                     e.preventDefault()
                                                     setCountriesDrawerState(true)
-                                                }
-                                                } className="bg-slate-100 flex items-center space-x-2 rounded-l-lg px-2 py-1 border border-slate-300 border-r-0">
-                                                    {selectedCountryData ? <> <Image src={`https://hatscripts.github.io/circle-flags/flags/${selectedCountryData[0].alpha2Code.toLowerCase()}.svg`} width="50" height="50" className="sm:w-8 sm:h-8 h-6 w-6" alt={countriesData[0].name} />
+                                                }}
+                                                    className="bg-slate-100 flex items-center space-x-2 rounded-l-lg px-2 py-1 border border-slate-300 border-r-0">
+                                                    {selectedCountryData ? <> <Image src={`https://hatscripts.github.io/circle-flags/flags/${selectedCountryData[0].alpha2Code.toLowerCase()}.svg`} width="50" height="50" className="sm:w-8 sm:h-8 h-7 w-7" alt={countriesData[0].name} />
                                                         <h5 className="font-semibold sm:text-lg text-sm">+{selectedCountryData[0].callingCodes}</h5>
                                                     </>
                                                         : null
@@ -300,7 +284,7 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
                                                             <AiFillCheckCircle className="sm:w-6 sm:h-6 h-4 w-4 text-green-500 " />
                                                             : isEmailValid === "failed" ? <AiOutlineInfoCircle className="sm:w-6 sm:h-6 h-4 w-4 text-red-500 " /> : null
                                                 }
-                                                onChange={(e) => { isValidEmail(e.target.value) }} className="font-semibold sm:text-lg text-sm w-full  sm:py-2 py-1" iconLeft={
+                                                onChange={(e) => { isValidEmail(e.target.value) }} className="font-semibold sm:text-lg text-sm w-full  py-2" iconLeft={
                                                     <MdAlternateEmail className="sm:w-6 sm:h-6 h-5 w-5 text-slate-400" />
                                                 } />
                                         </div>
