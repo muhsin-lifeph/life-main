@@ -29,7 +29,7 @@ export default function Home({ homePageData, locale }: { homePageData: any, loca
       next={fetchMoreData}
       hasMore={hasMore}
       loader={<h4>Loading...</h4>}
-      scrollThreshold={0.5}
+      scrollThreshold={0.3}
     >
       {content.map((data: any, ind: number) => (
         <PageStructure data={data} lang={locale} key={ind} />

@@ -697,7 +697,7 @@ const SingleProductsContent = ({ pro_data, relatedProductsData }: { pro_data: an
                 <ProductsSlider proData={relatedProductsData} /> :
                 null}
 
-            <AddtoCartMobileview salePrice={pro_data.sale_price} filterPrice={pro_data.filter_price} />
+            <AddtoCartMobileview addedToCart={addedToCart} salePrice={pro_data.sale_price} filterPrice={pro_data.filter_price} proQty={proQty} setProQty={setProQty}/>
         </div>
     )
 }

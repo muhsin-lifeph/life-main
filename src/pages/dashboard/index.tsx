@@ -1,10 +1,12 @@
 import { ShopNowButton } from "@/components/Button"
 import { FaArrowRight, FaCalendarCheck, FaComment, FaEdit, FaFileMedical, FaHeart, FaLocationArrow, FaMapMarked, FaMapMarkedAlt, FaMapMarker, FaMapMarkerAlt, FaMapPin, FaPlus, FaPowerOff, FaUser, FaWallet } from "react-icons/fa"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TransitionComp from "@/components/ui/transition"
 import { signOut, useSession } from "next-auth/react"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { Tooltip } from "@material-tailwind/react"
+import AuthModal from "@/components/authorixzation-modal"
+import { useModal } from "@/components/ui/modalcontext"
 
 
 export default function DashboardPage({ }) {
@@ -22,6 +24,15 @@ export default function DashboardPage({ }) {
     const [Prescription, setPrescription] = useState(false)
     const [selectedMenu, setSelectedMenu] = useState("dashboard")
     const session = useSession()
+    const { setSheetOpen, setModalFixedState } = useModal()
+
+    useEffect(() => {
+        setModalFixedState(true)
+
+        !session ?
+            setSheetOpen(true)
+            : setSheetOpen(false)
+    }, [session])
 
     const setMenuItemVisiblity = (menuName: string, setVisibility: boolean) => {
         if (setVisibility) {
@@ -450,7 +461,10 @@ export default function DashboardPage({ }) {
                         </TransitionComp> : null}
                 </div>
             </div >
-            : null
+            :
+            <div className="h-[500px] w-full bg-white">
+
+            </div>
 
     )
 

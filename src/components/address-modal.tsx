@@ -82,105 +82,105 @@ const AddressModal = () => {
                     </div>
                 </div> : ""}
             {addnewAddressFormVisibility ?
-                <div className="max-w-4xl relative w-full">
-                    <div className="relative   rounded-lg  overflow-y-auto no-scrollbar bg-white">
-                        <div className="absolute top-3 left-2.5 flex">
-                            <button type="button" className=" ml-auto inline-flex items-center rounded-lg bg-white bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900  " onClick={() => {
-                                // setaddNewAddress(false)
-                                setaddnewAddressFormVisibility(false)
-                                setAddNewAddressClick(true)
-                                setavailableAddresses(true)
-                            }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" className="h-4 w-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                                </svg>
-                                <span className="sr-only">Close modal</span>
-                            </button>
-                            <h3 className="ml-3 text-sm font-bold text-indigo-800  p-1.5">Your Address</h3>
-                        </div>
 
-                        <div className="px-6 pt-16 pb-4 bg-white">
-                            <form className="space-y-3 " onSubmit={addressFormOnSubmit}>
-                                <div>
-                                    <label className="mb-3 block w-fit rounded-full bg-indigo-800 px-3 py-1 text-[10px] font-semibold text-white ">PERSONAL DETAILS</label>
-                                    <input type="text" name="name" value={formData.name} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500      addressFormInputEle"} placeholder="Full Name *"
-                                        required />
-                                </div>
-                                <div>
-                                    <label className=" text-sm block mb-2 font-medium text-gray-90 file: ">Enter your mobile number <span className="text-red-500">*</span></label>
-                                    <div className="relative border border-gray-300 pl-3 rounded-lg">
-                                        <PhoneInput
-                                            placeholder="Enter phone number"
-                                            value={formData.phone}
-                                            onChange={isValidCredentials}
-                                            international
-                                            defaultCountry="AE"
-                                            id="phoneInputOTPAddress"
-                                            name="phone"
-                                            required
-                                        />
-                                        {isPhoneNumberValid ?
-                                            <div
-                                                className="absolute top-[16px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500"
-                                            >
-                                                <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
-                                                </svg>
+                <div className="relative   rounded-lg  overflow-y-auto no-scrollbar bg-white">
+                    <div className=" flex ">
+                        <button type="button" className="inline-flex items-center rounded-lg bg-white bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900  " onClick={() => {
+                            // setaddNewAddress(false)
+                            setaddnewAddressFormVisibility(false)
+                            setAddNewAddressClick(true)
+                            setavailableAddresses(true)
+                        }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" className="h-4 w-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                            <span className="sr-only">Close modal</span>
+                        </button>
+                        <h3 className="ml-3 text-sm font-bold text-indigo-800  p-1.5">Your Address</h3>
+                    </div>
 
-                                            </div> : ""}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="mb-3 block w-fit rounded-full bg-indigo-800 px-3 py-1 text-[10px] font-semibold text-white">ADDRESS DETAILS</label>
-
-                                    <div className="flex w-1/2">
-                                        <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900    ">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-5 w-5">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                                            </svg>
-                                        </span>
-
-                                        <select id="type" name="type" value={formData.type} onChange={formDatahandleChange} className="focus:outline-none block w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-gray-300 bg-gray-50 p-2.5 text-sm">
-                                            <option selected value="Home">Home</option>
-                                            <option value="Work">Work</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-6 ">
-                                    <input type="text" name="state" value={formData.state} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={" addressFormInputEle focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="Emirates *" required />
-
-                                    <input type="text" name="city" value={formData.city} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="City *" required />
-                                </div>
-
-                                <input type="text" name="street_address" value={formData.street_address} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} placeholder="Street Address *" className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 "}
+                    <div className=" pt-3 pb-4 bg-white">
+                        <form className="space-y-3 " onSubmit={addressFormOnSubmit}>
+                            <div>
+                                <label className="mb-3 block w-fit rounded-full bg-indigo-800 px-3 py-1 text-[10px] font-semibold text-white ">PERSONAL DETAILS</label>
+                                <input type="text" name="name" value={formData.name} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500      addressFormInputEle"} placeholder="Full Name *"
                                     required />
+                            </div>
+                            <div>
+                                <label className=" text-sm block mb-2 font-medium text-gray-90 file: ">Enter your mobile number <span className="text-red-500">*</span></label>
+                                <div className="relative border border-gray-300 pl-3 rounded-lg">
+                                    <PhoneInput
+                                        placeholder="Enter phone number"
+                                        value={formData.phone}
+                                        onChange={isValidCredentials}
+                                        international
+                                        defaultCountry="AE"
+                                        id="phoneInputOTPAddress"
+                                        name="phone"
+                                        required
+                                    />
+                                    {isPhoneNumberValid ?
+                                        <div
+                                            className="absolute top-[16px] right-3 grid h-5 w-5 -translate-y-2/4 place-items-center text-blue-gray-500"
+                                        >
+                                            <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"> <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none" /> <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                                            </svg>
 
-                                <div className="flex space-x-6">
-                                    <input name="flat_number" value={formData.flat_number} onChange={formDatahandleChange} type="text" onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"} placeholder="Flat / Villa *" required />
-                                    <input name="building" value={formData.building} onChange={formDatahandleChange} type="text" onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"} placeholder="Building *"
-                                        required />
+                                        </div> : ""}
                                 </div>
+                            </div>
+                            <div>
+                                <label className="mb-3 block w-fit rounded-full bg-indigo-800 px-3 py-1 text-[10px] font-semibold text-white">ADDRESS DETAILS</label>
 
-                                <div className="flex ">
+                                <div className="flex w-1/2">
                                     <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900    ">
-                                        Country
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="h-5 w-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                        </svg>
                                     </span>
 
-                                    <select id="country" name="country" value={formData.country} onChange={formDatahandleChange} className="focus:outline-none block w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-gray-300 bg-gray-50 p-2.5 text-sm">
-                                        <option selected value="United Arab Emirates">United Arab Emirates</option>
-                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                    <select id="type" name="type" value={formData.type} onChange={formDatahandleChange} className="focus:outline-none block w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-gray-300 bg-gray-50 p-2.5 text-sm">
+                                        <option selected value="Home">Home</option>
+                                        <option value="Work">Work</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
-                                <textarea name="additional_info" value={formData.additional_info} onChange={formDatahandleChange} className="w-full border-gray-300 rounded-lg border p-2.5 focus:outline-none text-sm" rows={1} placeholder="Additional information (eg. Area, Landmark)"></textarea>
+                            </div>
+                            <div className="flex space-x-6 ">
+                                <input type="text" name="state" value={formData.state} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={" addressFormInputEle focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="Emirates *" required />
 
-                                <div className="sticky bottom-2 border-0 rounded-lg">
-                                    <button type="submit" className=" w-full rounded-full bg-blue-500  py-1.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 " >SAVE ADDRESS</button>
-                                </div>
+                                <input type="text" name="city" value={formData.city} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="City *" required />
+                            </div>
 
-                            </form>
-                        </div>
+                            <input type="text" name="street_address" value={formData.street_address} onChange={formDatahandleChange} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} placeholder="Street Address *" className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 "}
+                                required />
+
+                            <div className="flex space-x-6">
+                                <input name="flat_number" value={formData.flat_number} onChange={formDatahandleChange} type="text" onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"} placeholder="Flat / Villa *" required />
+                                <input name="building" value={formData.building} onChange={formDatahandleChange} type="text" onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"focus:outline-none addressFormInputEle block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"} placeholder="Building *"
+                                    required />
+                            </div>
+
+                            <div className="flex ">
+                                <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-200 px-3 text-sm text-gray-900    ">
+                                    Country
+                                </span>
+
+                                <select id="country" name="country" value={formData.country} onChange={formDatahandleChange} className="focus:outline-none block w-full min-w-0 flex-1 rounded-none rounded-r-lg border border-gray-300 bg-gray-50 p-2.5 text-sm">
+                                    <option selected value="United Arab Emirates">United Arab Emirates</option>
+                                    <option value="Saudi Arabia">Saudi Arabia</option>
+                                </select>
+                            </div>
+                            <textarea name="additional_info" value={formData.additional_info} onChange={formDatahandleChange} className="w-full border-gray-300 rounded-lg border p-2.5 focus:outline-none text-sm" rows={1} placeholder="Additional information (eg. Area, Landmark)"></textarea>
+
+                            <div className="sticky bottom-2 border-0 rounded-lg">
+                                <button type="submit" className=" w-full rounded-full bg-blue-500  py-1.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 " >SAVE ADDRESS</button>
+                            </div>
+
+                        </form>
                     </div>
-                </div> : ""}
+                </div>
+                : ""}
             {session?.token?.addresses.length > 0 && availableAddresses ?
                 <div className=" overflow-y-auto overflow-x-hidden  no-scrollbar  min-h-fit  max-h-[calc(80vh-1rem)]">
 
