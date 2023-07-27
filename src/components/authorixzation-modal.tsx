@@ -16,6 +16,7 @@ import OtpInput from 'react-otp-input';
 import { MdAlternateEmail } from "react-icons/md"
 import { useModal } from "./ui/modalcontext";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 
 const AuthModal = () => {
@@ -28,8 +29,9 @@ const AuthModal = () => {
     const handleChange = (state: string) => setState(state);
     const [phoneNumberforOTP, setPhoneNumberforOtp] = useState('');
     const [LoginSignUpPageVisibility, setLoginSignUpPageVisibility] = useState(true)
-
+    const {pathname} = useRouter()
     const [selectedCountryData, setSelectedCountryData] = useState<any>(null)
+    console.log(pathname);
 
     const {
         setSheetOpen,
@@ -276,9 +278,9 @@ const AuthModal = () => {
                                 </div>
                             </div>
                             <div className="flex space-x-2">
-                                {isFixedModal ?
-                                    <Link href="/cart" className={"w-1/3 " + buttonVariants({ variant: "outline" })} >Back To Cart</Link> : null}
-                                <Button disableBtn={isPhoneNumberValid === "success" || isEmailValid === "success" ? false : true} className="w-full" onClick={() => { isValidPhoneNoInput(true) }} >
+                                {isFixedModal && pathname==="/checkout"?
+                                    <Link href="/cart" onClick={()=>setSheetOpen(false)} className={"w-2/3 sm:1/3 sm:text-base text-sm " + buttonVariants({ variant: "outline", size:"default" })} >Back To Cart</Link> : null}
+                                <Button  disableBtn={isPhoneNumberValid === "success" || isEmailValid === "success" ? false : true} className="w-full" onClick={() => { isValidPhoneNoInput(true) }} >
                                     PROCEED
                                 </Button>
 

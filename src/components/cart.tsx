@@ -40,7 +40,6 @@ const Cart = () => {
         setDomLoaded(true)
     }, [])
 
-    const [proQty, setProQty] = useState<any>(0)
     const cartItemsData = cartItems.cart.cart_data ? cartItems.cart.cart_data.items : []
 
     return (
@@ -69,7 +68,7 @@ const Cart = () => {
                                     <Image src={"https://www.lifepharmacy.com/images/return.svg"} height={35} width={35} alt={"delivery"} />
                                 </div>
                                 <div className='p-1'>
-                                    <p className='text-life  text-xs font-semibold'> RETURN POLICY</p>
+                                    <p className='text-life  text-xs font-semibold'>RETURN POLICY</p>
                                     <p className='text-[10px]'>Orders once placed can't be returned or exchanged <span><a className='text-blue-500'>Learn More</a></span> </p>
                                 </div>
                             </div>

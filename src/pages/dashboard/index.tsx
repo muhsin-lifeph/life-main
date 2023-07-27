@@ -23,15 +23,15 @@ export default function DashboardPage({ }) {
     const [Logout, setLogOut] = useState(false)
     const [Prescription, setPrescription] = useState(false)
     const [selectedMenu, setSelectedMenu] = useState("dashboard")
-    const session = useSession()
-    const { setSheetOpen, setModalFixedState } = useModal()
+    const {data:session} = useSession()
+    const { setSheetOpen, setModalFixedState} = useModal()
 
-    useEffect(() => {
+    useEffect(() => { 
         setModalFixedState(true)
 
         !session ?
-            setSheetOpen(true)
-            : setSheetOpen(false)
+        setSheetOpen(true)
+        : setSheetOpen(false)
     }, [session])
 
     const setMenuItemVisiblity = (menuName: string, setVisibility: boolean) => {
@@ -89,7 +89,7 @@ export default function DashboardPage({ }) {
     }
 
     return (
-        session.data && session.data.token ?
+        session && session.token ?
 
             <div className="max-w-[1450px] mx-auto  sm:px-[10px] px-[5px] min-h-fit flex sm:space-x-10 space-x-0 pt-5">
 
@@ -248,7 +248,7 @@ export default function DashboardPage({ }) {
                             <div className="py-4 w-full space-y-4 ">
                                 <div className="w-full py-5 px-3 rounded-lg border-muted border text-sm space-y-4">
                                     <div className="sm:text-base text-xs">
-                                        <span>Hello </span><span className="font-semibold">{session.data && session.data.user ? session.data?.user.name : "Helo"} !</span>
+                                        <span>Hello </span><span className="font-semibold">{session && session.user ? session?.user.name : "Helo"} !</span>
                                     </div>
                                     <div className="sm:text-base text-xs">
                                         From your account dashboard you can view your recent orders, manage your shipping and billing addresses, and edit your account details.
@@ -326,8 +326,8 @@ export default function DashboardPage({ }) {
                                     </div>
                                 </div>
                                 <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 my-3">
-                                    {session.data.token.addresses.length > 0 ?
-                                        session.data.token.addresses.map((addr: any) => (
+                                    {session.token.addresses.length > 0 ?
+                                        session.token.addresses.map((addr: any) => (
                                             <div className="border-muted border shadow-md rounded-lg px-4 py-3 space-y-4 h-full flex flex-col justify-between ">
                                                 <div className="space-y-2">
                                                     <div className="text-life text-sm font-bold ">{addr.type}</div>
@@ -368,13 +368,13 @@ export default function DashboardPage({ }) {
                                 <form className="space-y-6 mb-4" >
                                     <div className="w-full space-y-2">
                                         <label className=" text-sm block mb-2 font-medium text-gray-90 file: ">Full Name <span className="text-red-500 ml-1">*</span></label>
-                                        <input type="text" name="state" defaultValue={session.data.token.name ? session.data.token.name : ""} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"  focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="Full Name *" required />
+                                        <input type="text" name="state" defaultValue={session.token.name ? session.token.name : ""} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"  focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder="Full Name *" required />
                                         <p className="text-xs">Here is shown your first and last name.</p>
                                     </div>
 
                                     <div className="w-full space-y-2">
-                                        <label className=" text-sm block mb-2 font-medium text-gray-90 file: ">{session.data.token.email ? 'Email Address' : 'Phone Number'}<span className="text-red-500 ml-1">*</span></label>
-                                        <input type="text" name="state" defaultValue={session.data.token.email ? session.data.token.email : session.data.token.phone} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"  focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder={session.data.token.email ? "Email Address *" : "Phone Number *"} required />
+                                        <label className=" text-sm block mb-2 font-medium text-gray-90 file: ">{session.token.email ? 'Email Address' : 'Phone Number'}<span className="text-red-500 ml-1">*</span></label>
+                                        <input type="text" name="state" defaultValue={session.token.email ? session.token.email : session.token.phone} onBlur={(e) => { e.target.value === "" ? e.target.classList.add("border-red-500") : e.target.classList.remove("border-red-500") }} className={"  focus:outline-none block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 formTextBox"} placeholder={session.token.email ? "Email Address *" : "Phone Number *"} required />
                                     </div>
 
                                     <div className="w-full space-y-2">
@@ -421,7 +421,7 @@ export default function DashboardPage({ }) {
                             <div className="space-y-3 w-full ">
                                 <div className="bg-[#f4f7ff] p-3 rounded-lg w-full space-x-1 sm:text-sm text-xs">
                                     <span className="font-bold">Wallet Balance: </span>
-                                    <span className="text-life font-semibold "> {session.data?.token.wallet_balance}.00</span>
+                                    <span className="text-life font-semibold "> {session?.token.wallet_balance}.00</span>
                                     <span className="font-semibold text-xs"> AED</span>
                                 </div>
                                 <div className="border border-muted rounded-lg p-5 space-y-3">
