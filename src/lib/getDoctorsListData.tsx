@@ -10,7 +10,7 @@ export default async function getDoctorsListData(take: number, skip: number, que
         },
     };
     
-    const api = `https://devapp.lifepharmacy.com/api/clinics/v1/${query ? `search?speciality=${specialityQuery}&slot=${slotQuery}&clinic_id=&speciality_id=${specialityQuery}&slot_id=${slotQuery}&` : "doctors?"}skip=${skip}&take=${take}&new_method=true`
+    const api = `https://prodapp.lifepharmacy.com/api/clinics/v1/${query ? `search?speciality=${specialityQuery}&slot=${slotQuery}&clinic_id=&speciality_id=${specialityQuery}&slot_id=${slotQuery}&` : "doctors?"}skip=${skip}&take=${take}&new_method=true`
     const res = await fetch(api, requestOptions)
 
     if (!res.ok) throw new Error('failed to fetch data')

@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useState, Fragment } from "react";
 import 'react-phone-number-input/style.css';
 import { useSession } from "next-auth/react";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { useRouter } from "next/router";
 import React, { FC } from 'react'
 
@@ -15,7 +14,7 @@ import SmNavbarTop from "./sm-navbar-top";
 import getSearchDataSuggestions from "@/lib/getSearchData";
 import NavbarBottom from "./lg-navbar-top";
 import dynamic from 'next/dynamic'
-import { setModalVisibility } from "@/hooks/useOutsideClick";
+import { useModal } from "./ui/modalcontext";
 
 const LgNavbarMenu = dynamic(() => import('./lg-navbar-menu'), {
   ssr: false,
@@ -52,8 +51,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const { data: session } = useSession()
 
   const { locale } = useLanguage()
-  const [signInUsing, signInSet] = useState("");
-  const [isPhoneNumberValid, setPhoneNumberValidState] = useState(false);
   const [showElement, setShowElement] = useState(false);
   const [overlayVisible, setOverlay] = useState(false);
   const [searchClosebtn, setVisibility] = useState(false);
@@ -67,22 +64,7 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const [queryData, setQueryData] = useState("")
 
   //setModalVisibility
-  const {
-    locationModalState,
-    setLocationModalState,
-    setSheetOpen,
-    setaddNewAddress,
-    setaddnewAddressFormVisibility,
-    setnotValidOTPPageVisib,
-    isSheetOpen,
-    locationModal,
-    setLocationModal,
-    notValidOTPPageVisib,
-    setAddressDataIndex,
-    AddressDataIndex,
-    addNewAddress,
-    availableAddresses,
-    setavailableAddresses } = setModalVisibility();
+
 
   const [searchData, setData] = useState({
     results: [
@@ -104,30 +86,7 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
 
 
   //default-address
-  const [formData, setFormData] = useState({
-    id: addressId,
-    entity_id: 1462724,
-    name: "",
-    phone: "",
-    longitude: "55.272887000000000",
-    latitude: "25.219370000000000",
-    type: "Home",
-    country: "United Arab Emirates",
-    state: "",
-    city: "",
-    area: "Satwa",
-    street_address: "",
-    building: "",
-    flat_number: "",
-    suitable_timing: "0",
-    created_at: "2023-03-16T08:09:22.000000Z",
-    updated_at: "2023-03-16T08:09:22.000000Z",
-    google_address: "Al Satwa - Dubai - United Arab Emirates",
-    additional_info: "",
-    belongs_to: "user",
-    deleted_at: null,
-    is_validated: 1
-  });
+
 
   const router = useRouter();
 
@@ -158,18 +117,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
     }
   }
 
-  function isValidCredentials(value: string) {
-    if (value != null) {
-      if (isValidPhoneNumber(value)) {
-        setPhoneNumberValidState(true);
-        setFormData({ ...formData, phone: value });
-        signInSet("Phone");
-      }
-      else {
-        setPhoneNumberValidState(false);
-      }
-    }
-  }
 
   const searchButtonOnClick = (isOpen: boolean) => {
     if (window.innerWidth > 767) {
@@ -190,9 +137,10 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const searchBoxClear = () => {
     (document.getElementById("sm-searchbox") as HTMLInputElement).value = ""
     setQueryData("")
-    searchButtonOnMouseEnter("",)
+    searchButtonOnMouseEnter("")
     setVisibility(false);
   }
+
   function searchButtonOnMouseEnter(query: string) {
     setQueryData(query)
 
@@ -220,16 +168,6 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
     })
   }
 
-  var addressId = session ? (session.token.addresses.length != 0 ? (session.token.addresses[session.token.addresses.length - 1]?.id) + 1 : 12345 + 1) : ""
-
-  const formDatahandleChange = (e: any): void => {
-    const { name, value } = e.target;
-
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
 
 
   const locationOnClickHandle = () => {
@@ -252,6 +190,21 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
   const setModalState = (modalState: any) => {
     setLanguageModal(modalState)
   }
+  const { locationModalState,
+    setLocationModalState,
+    setSheetOpen,
+    setaddNewAddress,
+
+    setnotValidOTPPageVisib,
+    isSheetOpen,
+
+    setLocationModal,
+    notValidOTPPageVisib,
+
+    AddressDataIndex,
+
+    setavailableAddresses,
+  } = useModal();
 
   const parts = locale ? locale?.split("-") : ["ae", "en"]
   return (
@@ -276,14 +229,11 @@ const Navbar: FC<navbarProps> = ({ data, brands_data, isArabic, lang }) => {
       {/* modals */}
       <LocationModal showModal={locationModalState} setCloseModal={setLocationModalState} />
 
-      <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={isSheetOpen} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} />
+      <AuthModal />
 
       <InvalidOTPModal showModal={notValidOTPPageVisib} setCloseModal={setnotValidOTPPageVisib} />
 
-      <AddressModal setaddNewAddress={setaddNewAddress} session={session} formData={formData} isValidCredentials={isValidCredentials}
-        isPhoneNumberValid={isPhoneNumberValid} availableAddresses={availableAddresses}
-        setavailableAddresses={setavailableAddresses} showModal={session && addNewAddress ? true : false}
-        AddressDataIndex={AddressDataIndex} formDatahandleChange={formDatahandleChange} setAddressDataIndex={setAddressDataIndex} />
+      <AddressModal />
 
       <LanguageChangeModal setModalState={setModalState} modalState={languageModal} currentLanguage={parts[1] === "ar" ? languages[0] : languages[1]} currentCountry={parts[0] === "sa" ? countries[1] : countries[0]} countries={countries} languages={languages} lang={parts} />
 

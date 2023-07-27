@@ -1,9 +1,8 @@
 import { DeliverInstructionsBtn } from "@/components/Button";
-import AuthModal from "@/components/authorixzation-modal";
 import { PaymentMethodModal } from "@/components/location-modal";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setModalVisibility } from "@/hooks/useOutsideClick";
+import { useModal } from "@/components/ui/modalcontext";
 import { RootState } from "@/redux/store";
 import { ChevronDown, InfoIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -18,32 +17,20 @@ export default function Checkout({ }) {
     const [newCardSelected, setNewCardSelectedState] = useState(false);
     const [btnLoadingState, setBtnLoadingState] = useState(false);
     const { data: session } = useSession()
+    const { setSheetOpen, setModalFixedState, setaddNewAddress, AddressDataIndex } = useModal()
     useEffect(() => {
+        setModalFixedState(true)
         setDomLoaded(true)
-    }, [])
+        !session ?
+            setSheetOpen(true)
+            : setSheetOpen(false)
+    }, [session])
 
     const cartItems = useSelector((state: RootState) => state.cart);
-    const selectedAddress = session?.token.addresses[0]
     const cartItemsData = cartItems.cart.cart_data ? cartItems.cart.cart_data.items : []
     const shipmentData = cartItems.cart.shipment_data ? cartItems.cart.shipment_data[0] : []
     const cartSummery = cartItems.cart.cart_summary
 
-    const {
-        locationModalState,
-        setLocationModalState,
-        setSheetOpen,
-        setaddNewAddress,
-        setaddnewAddressFormVisibility,
-        setnotValidOTPPageVisib,
-        isSheetOpen,
-        locationModal,
-        setLocationModal,
-        notValidOTPPageVisib,
-        setAddressDataIndex,
-        AddressDataIndex,
-        addNewAddress,
-        availableAddresses,
-        setavailableAddresses } = setModalVisibility();
     return (
         domLoaded ?
             <div className="grid grid-cols-12 gap-x-3 px-[10px] py-5 max-w-[1440px] mx-auto">
@@ -54,7 +41,7 @@ export default function Checkout({ }) {
                                 <MdLocationPin />
                                 <span className="text-sm">DELIVER TO</span>
                             </div>
-                            <button className="bg-blue-800 text-sm h-fit my-auto px-2  rounded-full"><small>CHANGE</small> </button>
+                            <button className="bg-blue-800 text-sm h-fit my-auto px-2  rounded-full" onClick={() => setaddNewAddress(true)}><small>CHANGE</small> </button>
                         </div>
                         {session ?
                             <div className="p-2">
@@ -65,7 +52,7 @@ export default function Checkout({ }) {
                                                 <small className="">NAME:</small>
                                             </td>
                                             <td>
-                                                <small className="text-life">{selectedAddress?.name}</small>
+                                                <small className="text-life">{AddressDataIndex?.name}</small>
                                             </td>
                                         </tr>
                                         <tr>
@@ -73,7 +60,7 @@ export default function Checkout({ }) {
                                                 <small className="">ADDRESS:</small>
                                             </td>
                                             <td>
-                                                <small className="text-life">{selectedAddress?.google_address}</small>
+                                                <small className="text-life">{AddressDataIndex?.google_address}</small>
                                             </td>
                                         </tr>
                                         <tr>
@@ -81,7 +68,7 @@ export default function Checkout({ }) {
                                                 <small className="">PHONE:</small>
                                             </td>
                                             <td>
-                                                <small className="text-life">{selectedAddress?.phone}</small>
+                                                <small className="text-life">{AddressDataIndex?.phone}</small>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -128,9 +115,6 @@ export default function Checkout({ }) {
                         </div>
 
                     </div>
-
-
-
                 </div>
                 <div className="space-y-4 md:col-span-4 col-span-full">
                     <div className="shadow-md rounded-lg">
@@ -232,14 +216,12 @@ export default function Checkout({ }) {
                         </div>
                         <Button onClick={() => setBtnLoadingState(true)} isLoading={btnLoadingState} size={"lg"} disableBtn={!newCardSelected} className="w-full text-sm" >PLACE ORDER </Button>
                     </div>
-
                 </div>
-                
-                {!session ?
-                    <AuthModal setSheetOpen={setSheetOpen} isSheetOpen={true} showModal={locationModal} setCloseModal={setLocationModal} setaddNewAddress={setaddNewAddress} setaddnewAddressFormVisibility={setaddnewAddressFormVisibility} setLocationModal={setLocationModal} setnotValidOTPPageVisib={setnotValidOTPPageVisib} /> : null}
                 <PaymentMethodModal newCardSelected={newCardSelected} setNewCardSelectedState={setNewCardSelectedState} showModal={paymentMethodModalState} setCloseModal={setPaymentMethodModalState} />
             </div>
             : <></>
     )
 }
+
+
 

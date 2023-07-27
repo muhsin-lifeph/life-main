@@ -1,32 +1,24 @@
-import { Dialog, Transition, RadioGroup, Listbox } from "@headlessui/react";
-import React, { Fragment, useEffect } from "react"
+import React, { useEffect } from "react"
 import ModalContainer from "./ui/modal-container";
 import { Tabs, Tab, TabsHeader, TabsBody, TabPanel, Drawer } from "@material-tailwind/react"
-import PhoneInput from "react-phone-number-input";
 import { useState } from "react"
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { useSession } from "next-auth/react";
-import OtpField from "react-otp-field";
 import { useTimer } from "use-timer";
 import { signIn } from "next-auth/react";
-import Sheet, { SheetRef } from 'react-modal-sheet';
-import { CalendarIcon, CaretSortIcon, CheckIcon, Cross1Icon, EnvelopeClosedIcon, FaceIcon, GearIcon, PersonIcon, RocketIcon } from "@radix-ui/react-icons";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Cross1Icon } from "@radix-ui/react-icons";
 import { Button, buttonVariants } from "./ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from "./ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "./ui/command";
 import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
-import { Check, CheckCircle, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { AiFillCheckCircle, AiOutlineInfoCircle, AiOutlineLoading3Quarters } from 'react-icons/ai'
 import OtpInput from 'react-otp-input';
 import { MdAlternateEmail } from "react-icons/md"
-import { motion } from "framer-motion";
-import { BsPatchCheckFill } from "react-icons/bs"
-import { useWindowDimensions } from "@/hooks/useWindowDimensions";
+import { useModal } from "./ui/modalcontext";
+import Link from "next/link";
 
-const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setaddnewAddressFormVisibility, setLocationModal, setnotValidOTPPageVisib, setaddNewAddress }: { setSheetOpen: any, isSheetOpen: any, showModal: boolean, setCloseModal: any, setaddNewAddress: any, setaddnewAddressFormVisibility: any, setLocationModal: any, setnotValidOTPPageVisib: any }) => {
-    const { data: session } = useSession();
+
+const AuthModal = () => {
     const [isPhoneNumberValid, setPhoneNumberValidState] = useState<any>("");
     const [signInUsing, signInSet] = useState({ value: "", type: "" });
     const [isEmailValid, setEmailValidState] = useState<any>(null);
@@ -39,7 +31,16 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
 
     const [selectedCountryData, setSelectedCountryData] = useState<any>(null)
 
-    var addressId = session ? (session.token.addresses.length != 0 ? (session.token.addresses[session.token.addresses.length - 1]?.id) + 1 : 12345 + 1) : ""
+    const {
+        setSheetOpen,
+        setaddNewAddress,
+        setaddnewAddressFormVisibility,
+        setnotValidOTPPageVisib,
+        isSheetOpen,
+        setLocationModal,
+        setFormData,
+        formData,
+        isFixedModal } = useModal();
 
     const { time, start, pause, reset, status } = useTimer({
         initialTime: 59,
@@ -103,37 +104,11 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
             body: raw,
         };
         setPhoneNumberforOtp(pHNumber)
-        const res = fetch("https://devapp.lifepharmacy.com/api/auth/request-otp", requestOptions)
+        const res = fetch("https://prodapp.lifepharmacy.com/api/auth/request-otp", requestOptions)
             .then(response => response.json())
             .then(result => console.log(result))
             .catch(error => console.log('error while fetching search data', error));
     }
-
-
-    const [formData, setFormData] = useState({
-        id: addressId,
-        entity_id: 1462724,
-        name: "",
-        phone: "",
-        longitude: "55.272887000000000",
-        latitude: "25.219370000000000",
-        type: "Home",
-        country: "United Arab Emirates",
-        state: "",
-        city: "",
-        area: "Satwa/Badaa",
-        street_address: "",
-        building: "",
-        flat_number: "",
-        suitable_timing: "0",
-        created_at: "2023-03-16T08:09:22.000000Z",
-        updated_at: "2023-03-16T08:09:22.000000Z",
-        google_address: "Al Satwa - Dubai - United Arab Emirates",
-        additional_info: "",
-        belongs_to: "user",
-        deleted_at: null,
-        is_validated: 1
-    });
 
     const [phoneNumberValidTimeout, setPhoneNumberValidTimeout] = useState<any>(null)
 
@@ -217,17 +192,15 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
         })
     }, [])
     const [countriesDrawerState, setCountriesDrawerState] = useState(false)
-    const { width } = useWindowDimensions()
-
 
 
     return (
 
         <>
-            <ModalContainer size={"lg"} showModal={isSheetOpen} setCloseModal={setSheetOpen}>
+            <ModalContainer size={"lg"} showModal={isSheetOpen} setCloseModal={isFixedModal ? () => { } : setSheetOpen}>
                 <div className=" flex justify-between border-b-2 border-muted pt-3 font-semibold ">
                     <h4 className=" sm:text-2xl text-base items-center">Login or Sign up</h4>
-                    <div className="cursor-pointer" onClick={() => { setSheetOpen(false) }}>
+                    <div className="cursor-pointer" onClick={() => { isFixedModal ? () => { } : setSheetOpen(false) }}>
                         <Cross1Icon className="sm:w-6 sm:h-6 w-4 h-4" />
                     </div>
                 </div>
@@ -302,9 +275,15 @@ const AuthModal = ({ setSheetOpen, isSheetOpen, showModal, setCloseModal, setadd
                                     </div>
                                 </div>
                             </div>
-                            <Button disabled={isPhoneNumberValid === "success" || isEmailValid === "success" ? false : true} className="w-full" onClick={() => { isValidPhoneNoInput(true) }} >
-                                PROCEED
-                            </Button>
+                            <div className="flex space-x-2">
+                                {isFixedModal ?
+                                    <Link href="/cart" className={"w-1/3 " + buttonVariants({ variant: "outline" })} >Back To Cart</Link> : null}
+                                <Button disableBtn={isPhoneNumberValid === "success" || isEmailValid === "success" ? false : true} className="w-full" onClick={() => { isValidPhoneNoInput(true) }} >
+                                    PROCEED
+                                </Button>
+
+                            </div>
+
                         </div>
                     </form>
                     : null}

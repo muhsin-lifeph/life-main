@@ -214,14 +214,14 @@ const SingleProductsContent = ({ pro_data, relatedProductsData }: { pro_data: an
                                             <span className="text-xs my-auto ml-3 ">1-3 HOURS</span>
                                         </div>
                                     </div>
-                                    <div className=" justify-center h-fit p-3 bg-gray space-x-2 min-[570px]:flex hidden ">
+                                    <div className=" justify-center h-fit p-3 bg-gray space-x-3 min-[570px]:flex hidden ">
                                         <div className="flex">
-                                            <Button variant={"ghost"} onClick={() => proQty !== 1 ? setProQty((preQty: number) => preQty - 1) : null}>
+                                            <Button variant={"ghost"} className="!px-1 h-[38px] w-[38px] rounded-none" onClick={() => proQty !== 1 ? setProQty((preQty: number) => preQty - 1) : null}>
                                                 <FaMinus className="text-sky-600 h-[10px] " />
                                             </Button>
-                                            <input type="text" value={proQty} min="1" max="20" className=" rounded rounded-r-none bg-slate-100 w-10 border-none text-center text-sm text-gray-500 " />
-                                            <Button onClick={() => proQty >= 1 ? setProQty((preQty: number) => preQty + 1) : null}>
-                                                <FaPlus className="h-[10px]" />
+                                            <input type="text" value={proQty} min="1" max="20" className=" rounded rounded-r-none bg-slate-100 w-8 border-none text-center text-sm text-gray-500 " />
+                                            <Button className="!px-1 h-[38px] w-[38px] rounded-none" onClick={() => proQty >= 1 ? setProQty((preQty: number) => preQty + 1) : null}>
+                                                <FaPlus className="h-3 w-3" />
                                             </Button>
                                         </div>
 

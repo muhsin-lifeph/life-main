@@ -9,35 +9,12 @@ interface CartItem {
 }
 const storedCart = typeof window !== "undefined" ? window.localStorage.getItem('life-store') : false
 
-var initialCartState: any = {
-    data: {
-        items: [
-            // {
-            //     "id": "56d83529-6919-4d72-8b8e-5f49230d3fab",
-            //     "qty": 1
-            // }
-        ],
-        address_id: null
-    }
-}
-
-
 const init = {
     cart: {
-        // cart_data: {
 
-        //     items: [
-        //         // {
-        //         //     offer_id: null,
-        //         //     type: "simple",
-        //         //     offer_data: null,
-        //         //     items: [
-        //         //     ]
-        //         // }
-        //     ]
-        // }
     }
 }
+
 const cartSlice = createSlice({
     name: 'life-store',
     initialState: storedCart ? JSON.parse(storedCart) : init,
@@ -55,7 +32,4 @@ const cartSlice = createSlice({
 
 export const cartReducer = cartSlice.reducer;
 
-export const {
-
-    updateCartData
-} = cartSlice.actions;
+export const { updateCartData } = cartSlice.actions;

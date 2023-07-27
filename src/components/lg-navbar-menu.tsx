@@ -394,7 +394,7 @@ const LgNavbarMenu = ({ setOverlay, data, brands_data }: { setOverlay: any, data
                         </NavigationMenu.Content>
                     </NavigationMenu.Item>
 
-                    <NavigationMenu.Item className="w-full xl:col-span-1 col-span-2">
+                    <NavigationMenu.Item  className="w-full xl:col-span-1 col-span-2">
                         <NavigationMenu.Trigger onMouseOver={() => setOverlay(true)} onMouseLeave={() => setOverlay(false)} className="w-full group flex  select-none items-center justify-center rounded-[4px] px-3  text-[15px] font-medium leading-none outline-none focus:shadow-[0_0_0_2px]">
                             <Link href={"/brands"} className="flex items-center underline-tra hover:text-blue-500 ">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"

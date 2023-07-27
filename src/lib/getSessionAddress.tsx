@@ -6,7 +6,7 @@ export default async function getSessionDataAddress(sessionData:any) {
         }
     };
     if (sessionData) {
-        const userAddrheaderRes = await fetch('https://devapp.lifepharmacy.com/api/user/addresses', {
+        const userAddrheaderRes = await fetch('https://prodapp.lifepharmacy.com/api/user/addresses', {
             headers: {
                 Authorization: `Bearer ${sessionData.token.token}`
             }

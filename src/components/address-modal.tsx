@@ -1,13 +1,28 @@
 import ModalContainer from "./ui/modal-container"
-import { useState } from "react"
-import { Dialog } from "@headlessui/react";
+import React, { useState } from "react"
 import PhoneInput from "react-phone-number-input";
 import { RadioGroup } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
+import { useSession } from "next-auth/react";
+import { useModal } from "./ui/modalcontext";
 
-const AddressModal = ({ setaddNewAddress, showModal, session, formData, isValidCredentials, isPhoneNumberValid, availableAddresses, setavailableAddresses, AddressDataIndex, setAddressDataIndex, formDatahandleChange }: { showModal: any, session: any, formData: any, isValidCredentials: any, isPhoneNumberValid: boolean, availableAddresses: boolean, setavailableAddresses: any, setaddNewAddress: any, AddressDataIndex: any, setAddressDataIndex: any, formDatahandleChange: any }) => {
+
+const AddressModal = () => {
     const [addnewAddressFormVisibility, setaddnewAddressFormVisibility] = useState(false);
-    const [addNewAddressClick, setAddNewAddressClick] = useState(false);
+    const [addNewAddressClick, setAddNewAddressClick] = useState(true);
+    const { data: session } = useSession()
+
+    const {
+        setaddNewAddress,
+        addNewAddress,
+        setAddressDataIndex,
+        AddressDataIndex,
+        availableAddresses,
+        setavailableAddresses,
+        isPhoneNumberValid,
+        formData,
+        formDatahandleChange,
+        isValidCredentials } = useModal();
 
     const addressFormOnSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
         e.preventDefault();
@@ -24,7 +39,7 @@ const AddressModal = ({ setaddNewAddress, showModal, session, formData, isValidC
             },
             body: JSON.stringify(formData)
         };
-        fetch("https://devapp.lifepharmacy.com/api/user/save-address", requestOptions)
+        fetch("https://prodapp.lifepharmacy.com/api/user/save-address", requestOptions)
             .then(response => {
                 if (response.ok) {
                     setAddressDataIndex(0);
@@ -45,7 +60,7 @@ const AddressModal = ({ setaddNewAddress, showModal, session, formData, isValidC
 
 
     return (
-        <ModalContainer size={"lg"} showModal={showModal} setCloseModal={setCloseModal}>
+        <ModalContainer size={"lg"} showModal={session && addNewAddress ? true : false} setCloseModal={setCloseModal}>
             {addNewAddressClick && session?.token.addresses.length === 0 ?
                 <div className=" bg-white rounded-lg shadow  overflow-y-auto no-scrollbar min-h-fit  max-h-[calc(80vh-1rem)] ">
                     <div className="flex items-start justify-between ">
@@ -71,8 +86,10 @@ const AddressModal = ({ setaddNewAddress, showModal, session, formData, isValidC
                     <div className="relative   rounded-lg  overflow-y-auto no-scrollbar bg-white">
                         <div className="absolute top-3 left-2.5 flex">
                             <button type="button" className=" ml-auto inline-flex items-center rounded-lg bg-white bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900  " onClick={() => {
-                                setaddNewAddress(false)
+                                // setaddNewAddress(false)
                                 setaddnewAddressFormVisibility(false)
+                                setAddNewAddressClick(true)
+                                setavailableAddresses(true)
                             }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" className="h-4 w-4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -177,7 +194,7 @@ const AddressModal = ({ setaddNewAddress, showModal, session, formData, isValidC
                         }
                         }>Add New Address</button>
                     </div>
-                    <RadioGroup defaultValue={session?.token.addresses[AddressDataIndex]} onChange={setAddressDataIndex}>
+                    <RadioGroup value={AddressDataIndex} onChange={setAddressDataIndex}>
                         <RadioGroup.Label className="sr-only">Server size</RadioGroup.Label>
                         <div className="space-y-2">
                             {session?.token.addresses.map((addr: any, indx: number) => (

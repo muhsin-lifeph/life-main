@@ -18,7 +18,7 @@ import { SlRefresh } from "react-icons/sl";
 export function CommandDemo({ cartItems, children }: { cartItems: any, children: any }) {
 
     return (
-        <Command className="rounded-lg  bg-white">
+        <Command className="rounded-lg  bg-white p-1">
             <CommandInput placeholder="Type a command or search..." />
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>

@@ -85,16 +85,19 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
                 <div className="text-[11px] text-center text-white whitespace-nowrap">{t.navbar.wishlist}</div>
 
             </a>
-            <Link href={"/cart"} className="justify-between flex-col md:hidden lg:flex hidden relative cart group/cart pl-5">
+            <div className="justify-between flex-col md:hidden lg:flex hidden relative cart group/cart pl-5">
                 {domLoaded ?
                     cartItemsData && cartItemsData.length != 0 ?
-                        <div className="absolute inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500  rounded-full -top-2 -right-2 "> {cartItemsData.length}</div>
+                        <div className="absolute inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500  rounded-full -top-1 -right-2 "> {cartItemsData.length}</div>
                         : null : null}
+                <Link href={"/cart"} className="block ">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-7 h-7 fill-white" viewBox="0 0 16 16">
+                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
+                    </svg>
+                    </Link>
+                    <div className="text-[11px] text-center text-white" >{t.navbar.cart}</div>
+           
 
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="w-7 h-7 fill-white" viewBox="0 0 16 16">
-                    <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
-                </svg>
-                <div className="text-[11px] text-center text-white" >{t.navbar.cart}</div>
 
                 {domLoaded && cartItemsData && cartItemsData.length > 0 ?
                     <div className="group-hover/cart:scale-100  scale-0 absolute w-[25rem] top-[3rem] right-0  rounded-lg px-3 py-2  h-fit  shadow-lg z-30">
@@ -116,7 +119,7 @@ const LgScreenSubMenu = ({ setSheetOpen, countries, languages, setLanguageModal,
 
                     </div>
                     : null}
-            </Link>
+            </div>
         </div>
     )
 }

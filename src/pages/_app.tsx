@@ -11,6 +11,7 @@ import { Poppins } from 'next/font/google';
 import NextNProgress from 'nextjs-progressbar';
 import Head from 'next/head'
 import { ThemeProvider } from "@material-tailwind/react";
+import { ModalProvider } from '@/components/ui/modalcontext'
 const poppins = Poppins({
   weight: '400',
   subsets: ['latin-ext'],
@@ -42,11 +43,13 @@ const App = ({ Component, data, brands_data, pageProps }: TProps) => {
       </Head>
       <NextNProgress color="#eba834" />
       <SessionProvider >
+        <ModalProvider>
         <main dir={getDirection(locale)} className={poppins.className + " relative"}>
           <Layout data={data} brands_data={brands_data} isArabic={false} lang={locale ? locale : "en"} langData={t} >
             <Component {...pageProps} />
           </Layout>
         </main>
+        </ModalProvider>
       </SessionProvider>
     </>
 

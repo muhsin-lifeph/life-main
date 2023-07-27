@@ -200,34 +200,17 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                                     <span className="lg:text-xs my-auto lg:ml-3 ml-1 text-[10px]">12 - 24 HRS</span>
                                 </div>
                                 {(proQty > 0 && itemExists()) || loadingFinished ?
-                                    // <div className="grid grid-cols-3 items-center ">
-                                    //     <button onClick={() => {
-                                    //         dispatch(decrementQuantity(pro_data.id))
-                                    //         toast.info(`Cart successfully updated`);
-                                    //     }} className='bg-white border-gray-200 border flex justify-center p-0.5 rounded-sm'>
-                                    //         <Image src={"https://www.lifepharmacy.com/images/trash.svg"} height={17} width={17} alt="trash"/>
-                                    //     </button>
-                                    //     <div className=' text-sm px-2 text-center '>{getProductQuantity(pro_data.id)}</div>
-                                    //     <button onClick={() => {
-                                    //         dispatch(incrementQuantity(pro_data.id))
-                                    //         toast.info(`Cart successfully updated`);
-                                    //     }} className='bg-[#39f] p-1 h-full rounded-sm'>
-                                    //         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="white" className="w-[17px] h-4 ">
-                                    //             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                    //         </svg>
-                                    //     </button>
-                                    // </div>
 
                                     <div className='flex items-center'>
                                         <Button
                                             onClick={() => {
                                                 updateCartQuantity(proQty - 1)
                                             }}
-                                            variant={'ghost'} className=' !px-1 h-fit'>
+                                            variant={'ghost'} className=' !px-1 h-[28px] w-[28px] rounded-none'>
                                             {proQty > 1 ?
                                                 <MinusIcon className='w-4 h-3' />
                                                 :
-                                                <BsTrash className='w-4 h-3' />
+                                                <BsTrash className='w-4 h-4' />
                                             }
                                         </Button>
                                         <button className='px-3'>
@@ -240,10 +223,10 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                                                 debugger
                                                 updateCartQuantity(proQty + 1)
                                             }}
-                                            className='bg-primary text-white rounded-sm !px-1.5 h-fit'>
+                                            className=' text-white h-[28px] w-[28px] rounded-none !px-1 '>
                                             {/* <BsPlus className='w-4 h-3' /> */}
                                             {!loadingState ?
-                                                <BsPlus className='w-4 h-3' />
+                                                <BsPlus className='w-4 h-4' />
                                                 : <SlRefresh className='text-white animate-spin' />
                                             }
                                         </Button>
@@ -304,25 +287,36 @@ export const SingleProductData = ({ pro_data, isRowView }: { pro_data: any, isRo
                     {pro_data.label ? <div style={{ background: pro_data.label.color_code }} className={`skeleton-box ribbon-2 flex items-center text-white `}><span className='items-center'>{pro_data.label.label_text}</span>
                         <div className={`${pathname?.substring(4, 6) === 'en' ? "ml-2" : "ml-2"}`}>{generateIcon(pro_data.label.icon_type)}</div></div> : null}
                     <div className="absolute bottom-2 right-2 flex h-7 ">
-                        {addedToCartClicked ?
+                        {(proQty > 0 && itemExists()) || loadingFinished ?
                             <>
-                                {/* <button
+                                <Button
                                     onClick={() => {
-                                        dispatch(decrementQuantity(pro_data.id))
-                                        toast.info(`Cart successfully updated`);
-                                    }} className="border border-slate-100 bg-white px-1 w-[2rem]">
-                                    <Image src="https://www.lifepharmacy.com/images/trash.svg" height="15" width="15" alt="trash" className="h-5 mx-auto  w-4" />
+                                        updateCartQuantity(proQty - 1)
+                                    }}
+                                    variant={'ghost'} className=' !px-1 h-[28px] w-[28px] rounded-none'>
+                                    {proQty > 1 ?
+                                        <MinusIcon className='w-4 h-4' />
+                                        :
+                                        <BsTrash className='w-4 h-4' />
+                                    }
+                                </Button>
+                                <button className='px-3'>
+
+                                    <span className='text-sm'>{proQty}</span>
+
                                 </button>
-                                <div className="px-2 text-center my-auto"><span>{proQty}</span></div>
-                                <button
+                                <Button disableBtn={loadingState}
                                     onClick={() => {
-                                        dispatch(incrementQuantity(pro_data.id))
-                                        toast.info(`Cart successfully updated`);
-                                    }} className="bg-[#39f] m-[0.5px] w-[2rem] ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="{1.5}" stroke="white" className="h-4 w-5 mx-auto">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                    </svg>
-                                </button> */}
+                                        debugger
+                                        updateCartQuantity(proQty + 1)
+                                    }}
+                                    className=' text-white rounded-sm !px-1 h-[28px] w-[28px]'>
+                                    {/* <BsPlus className='w-4 h-3' /> */}
+                                    {!loadingState ?
+                                        <BsPlus className='w-4 h-4' />
+                                        : <SlRefresh className='text-white animate-spin' />
+                                    }
+                                </Button>
                             </>
                             :
                             <button onClick={() => {
